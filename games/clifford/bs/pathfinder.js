@@ -83,18 +83,20 @@ const getTheNextPoint = (board, path, myPosition, ground_cached_local, pipes_cac
 
 const addNextPointIfPossible = (board, position, direction, allPaths, visitedPointsList, index) => {
     let x = 0,
-        y = 0;
+        y = 0,
+        shootDownX = 0;
 
     x = direction == right_direction ? 1 : x;
     x = direction == left_direction ? -1 : x;
     
-
     y = direction == up_direction ? 1 : y;
     y = direction == down_direction ? -1 : y;
     
-
+    shootDownX = direction == shoot_left_down_direction ? -1 : shootDownX;
+    shootDownX = direction == shoot_right_down_direction ? 1 : shootDownX;
     
     if (!board.isBarrierAtCached(position.x + x, position.y + y, barriers_cached)
+        && !board.isBarrierAtCached(position.x + shootDownX, position.y + y, barriers_cached)
         || board.contains(allPaths[index].removedBarriers, new Point(position.x + x, position.y + y))) {
         const nextPoint = getTheNextPoint(board, allPaths[index], new Point(position.x + x, position.y + y), ground_cached, pipes_cached);
         if(board.contains(treasures_cached, nextPoint))
@@ -104,8 +106,10 @@ const addNextPointIfPossible = (board, position, direction, allPaths, visitedPoi
         }
 
         if([shoot_left_down_direction, shoot_right_down_direction].includes(direction)) {
-            processShootingInTheFloor(board, position, allPaths, index, direction);
-            return;
+            if(processShootingInTheFloor(board, position, allPaths, index, direction) == exit_from_loop)   
+            {
+                return exit_from_loop;
+            }
         }
 
         if (!board.contains(visitedPointsList, nextPoint)) {
@@ -130,10 +134,20 @@ const processShootingInTheFloor = (board, position, allPaths, index, direction) 
         
         const nextPosition = getTheNextPoint(board, allPaths[index], new Point(position.x + shootx, position.y), ground_cached, pipes_cached);
         
-        allPaths.push(new CliffordPath([...allPaths[index].points, position, nextPosition], 
+        if(board.contains(treasures_cached, nextPosition))
+        {
+            allPaths.push(new CliffordPath([...allPaths[index].points, position, nextPosition], 
                 [...allPaths[index].directions, direction, nextDirection],
-            false, false,
+            true, true,
             _removedBarriers = removeBarriers));
+
+            return exit_from_loop;
+        }
+
+        allPaths.push(new CliffordPath([...allPaths[index].points, position, nextPosition], 
+            [...allPaths[index].directions, direction, nextDirection],
+        false, false,
+        _removedBarriers = removeBarriers));
     }
 }
 
@@ -162,7 +176,7 @@ const findAllPaths = (board, allPaths, visitedPointsList) => {
         }
 
         //go up if possible
-        if(board.isLadderAtCached(theLastPoint.x, theLastPoint.y + 1, ladders_cached)
+        if(board.isLadderAtCached(theLastPoint.x, theLastPoint.y, ladders_cached)
             && addNextPointIfPossible(board, theLastPoint, up_direction, allPaths, visitedPointsList, i) === exit_from_loop)
         {
             return allPaths;

@@ -90,6 +90,35 @@ var CliffordBoard = module.exports = function(board){
         return result;
     }
 
+    board.getEnemies = () => {
+        let result = [];
+        result = result.concat(board.findAll(Element.ENEMY_HERO_LADDER));
+        result = result.concat(board.findAll(Element.ENEMY_HERO_LEFT));
+        result = result.concat(board.findAll(Element.ENEMY_HERO_RIGHT));
+        result = result.concat(board.findAll(Element.ENEMY_HERO_PIPE));
+        result = result.concat(board.findAll(Element.ENEMY_HERO_PIT));
+        // mask
+        result = result.concat(board.findAll(Element.ENEMY_HERO_MASK_LADDER));
+        result = result.concat(board.findAll(Element.ENEMY_HERO_MASK_LEFT));
+        result = result.concat(board.findAll(Element.ENEMY_HERO_MASK_RIGHT));
+        result = result.concat(board.findAll(Element.ENEMY_HERO_MASK_PIPE));
+        result = result.concat(board.findAll(Element.ENEMY_HERO_MASK_PIT));
+    
+        result = result.concat(board.findAll(Element.OTHER_HERO_LADDER));
+        result = result.concat(board.findAll(Element.OTHER_HERO_LEFT));
+        result = result.concat(board.findAll(Element.OTHER_HERO_RIGHT));
+        result = result.concat(board.findAll(Element.OTHER_HERO_PIPE));
+        result = result.concat(board.findAll(Element.OTHER_HERO_PIT));
+        // mask
+        result = result.concat(board.findAll(Element.OTHER_HERO_MASK_LADDER));
+        result = result.concat(board.findAll(Element.OTHER_HERO_MASK_LEFT));
+        result = result.concat(board.findAll(Element.OTHER_HERO_MASK_RIGHT));
+        result = result.concat(board.findAll(Element.OTHER_HERO_MASK_PIPE));
+        result = result.concat(board.findAll(Element.OTHER_HERO_MASK_PIT));
+    
+        return result;
+    }
+
     board.getRobbers = function() {
         var result = [];
         result = result.concat(board.findAll(Element.ROBBER_LADDER));
@@ -119,6 +148,12 @@ var CliffordBoard = module.exports = function(board){
         var result = [];
         result = result.concat(board.findAll(Element.BRICK));
         result = result.concat(board.findAll(Element.STONE));
+        return result;
+    }
+
+    board.getBullets = function() {
+        var result = [];
+        result = result.concat(board.findAll(Element.BULLET));
         return result;
     }
 
@@ -178,6 +213,7 @@ var CliffordBoard = module.exports = function(board){
         all = all.concat(board.getOtherHeroes());
         all = all.concat(board.getEnemyHeroes());
         all = all.concat(board.getWalls());
+        all = all.concat(board.getBullets());
         return board.removeDuplicates(all);
     };
 

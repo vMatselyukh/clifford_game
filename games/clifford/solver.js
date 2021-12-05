@@ -26,30 +26,9 @@ const Direction = Games.require('./direction.js');
 const Element = Games.require('./elements.js');
 const Stuff = require('./../../engine/stuff.js');
 const { findPathsFromPoint } = require("./bs/pathfinder");
+const { isEnemyLeft, isEnemyRight, decreaseBulletCounter } = require("./bs/enemydefender");
 
-const isEnemyLeft = (board, myPosition) => {
-  for (let i = 0; i < myPosition.x; i++) {
-    if (board.isAt(i, myPosition.y, Element.ENEMY_HERO_LADDER)
-      || board.isAt(i, myPosition.y, Element.ENEMY_HERO_LEFT)
-      || board.isAt(i, myPosition.y, Element.ENEMY_HERO_RIGHT)
-    )
-      return true;
-  }
-
-  return false;
-}
-
-const isEnemyRight = (board, myPosition) => {
-  for (let i = myPosition.x; i < 29; i++) {
-    if (board.isAt(i, myPosition.y, Element.ENEMY_HERO_LADDER)
-      || board.isAt(i, myPosition.y, Element.ENEMY_HERO_LEFT)
-      || board.isAt(i, myPosition.y, Element.ENEMY_HERO_RIGHT)
-    )
-      return true;
-  }
-
-  return false;
-}
+const bullets_array = [];
 
 const isRobberLeft = (board, myPosition) => {
   let robberPosition = -1;
@@ -269,12 +248,27 @@ const canIWalkToThePoint = (board, myPosition, desiredPosition) => {
 
 var CliffordSolver = module.exports = {
   get: function (board) {
+    decreaseBulletCounter(bullets_array);
+    
     let myPosition = board.getHero();
 
     let paths = findPathsFromPoint(board, myPosition);
 
     let neededPath = paths.slice(-1)[0];
     let stringDirection = neededPath.directions[1];
+
+    let myBullet = bullets_array.find(bullet => bullet.y == myPosition.y && bullet.counter > 0);
+
+    if(isEnemyLeft(board, myPosition) && !myBullet)
+    {
+      bullets_array.push({y: myPosition.y, counter:5});
+      return Direction.SHOOT_LEFT;
+    }
+    else if(isEnemyRight(board, myPosition) && !myBullet)
+    {
+      bullets_array.push({y: myPosition.y, counter:5});
+      return Direction.SHOOT_RIGHT;
+    }
 
     switch (stringDirection) {
       case "left":
@@ -285,6 +279,10 @@ var CliffordSolver = module.exports = {
         return Direction.UP;
       case "down":
         return Direction.DOWN;
+      case "sleftdown":
+        return Direction.CRACK_LEFT;
+      case "srightdown":
+        return Direction.CRACK_RIGHT;
       default:
         Direction.STOP;
     }

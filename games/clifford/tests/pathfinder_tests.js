@@ -17,6 +17,10 @@ const PathFinderTests = () => {
     testFindPathFromPoint();
     testFindPathFromPipe();
     testFindPathFromBlocked();
+    testFindPathFromBlocked1();
+    testFindPathFromBlocked2();
+    testFindPathFromBlocked3();
+    testFindPathFromBlocked4();
 }
 
 const testGetTreasuresOnBoard = () => {
@@ -281,7 +285,7 @@ const testFindPathFromBlocked = () => {
     
     const shortestPath = allPath.find(path => path.isFinished && path.isTheFirstShortest)
 
-    assertEquals(",sleftdown,left,left",
+    assertEquals(",right,srightdown,right",
          shortestPath.directions.toString());
 }
 
@@ -325,7 +329,139 @@ const testFindPathFromBlocked1 = () => {
     
     const shortestPath = allPath.find(path => path.isFinished && path.isTheFirstShortest)
 
-    assertEquals(",left,left,left,left,left,left",
+    assertEquals(",srightdown,right,down,srightdown,right",
+         shortestPath.directions.toString());
+}
+
+const testFindPathFromBlocked2 = () => {
+    let board = new Board(
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+        "☼H   @&  @  &&~~H~~~~☼☼☼☼☼☼☼H☼" +
+        "☼H~~~~  ######  H         H☼H☼" +
+        "☼H              ##H#######H☼H☼" +
+        "☼H#########       H    ~~~H☼H☼" +
+        "☼H      $ ###H####H##H◄    ☼H☼" +
+        "☼H           H    x #######☼H☼" +
+        "☼~~~~~~~~~~~~H  &  & H~~~~~☼H☼" +
+        "☼ @&  H          &»  H     ☼H☼" +
+        "☼ ### #############H H#####☼H☼" +
+        "☼H                 H    &  ☼H☼" +
+        "☼H#####      &$ H##H####   &H☼" +
+        "☼H      H######### H @ ######☼" +
+        "☼H##$  WH  (    & &H~~~~~~   ☼" +
+        "☼~~~~#####H#   ~~~~H$  $     ☼" +
+        "☼    m    H        H  $&  ~~~☼" +
+        "☼   ########H    ######H##   ☼" +
+        "☼           H         $H     ☼" +
+        "☼H &  ###########H   m H#####☼" +
+        "☼H### @     & W  H&  W H $   ☼" +
+        "☼H  ######  ##H###### »H     ☼" +
+        "☼H W          H ~~~~~##H###H&☼" +
+        "☼   »X########H#   &   H   ##☼" +
+        "☼ ###H   $ $  H         ~~~~~☼" +
+        "☼    H########H#########    m☼" +
+        "☼H   H                      &☼" +
+        "☼H  ####H######         #####☼" +
+        "☼H      H W    H#######H     ☼" +
+        "☼##############H       H#####☼" +
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+    );
+
+    const heroPoint = board.getHero();
+
+    const allPath = findPathsFromPoint(board, heroPoint);
+    
+    const shortestPath = allPath.find(path => path.isFinished && path.isTheFirstShortest)
+
+    assertEquals(",srightdown,right,down,srightdown,right",
+         shortestPath.directions.toString());
+}
+
+const testFindPathFromBlocked3 = () => {
+    let board = new Board(
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+        "☼H            ~~HY~~~☼☼☼☼☼☼☼H☼" +
+        "☼H~~~~  ######  H    ►    H☼H☼" +
+        "☼H@ @   &       ##H#######H☼H☼" +
+        "☼H#########       H)   ~~~H☼H☼" +
+        "☼H        ###H####H##H     ☼H☼" +
+        "☼H $         H   &  #######☼H☼" +
+        "☼~~~~~~~~J~~~H     m H~~~~~☼H☼" +
+        "☼  &  H   »       »  H     ☼H☼" +
+        "☼ ### #############HmH#####☼H☼" +
+        "☼H$      &  $      H &     ☼H☼" +
+        "☼H#####         H##H#### &  H☼" +
+        "☼H    & H######### H & ######☼" +
+        "☼H##    H       &  H~~~~~~W  ☼" +
+        "☼~~~~#####H#  m~~~~H         ☼" +
+        "☼         H     &  H      ~~~☼" +
+        "☼   ########H    ######H##$  ☼" +
+        "☼         & H      $   H     ☼" +
+        "☼H    ###########H    &H#####☼" +
+        "☼H###     @&    (H &   HW$   ☼" +
+        "☼H  ######& ##H######@$H     ☼" +
+        "☼H            H ~~~~~##H###H ☼" +
+        "☼    H########H#@      H   ##☼" +
+        "☼ ###H     &  H         ~~~~~☼" +
+        "☼&   H########H#########    &☼" +
+        "☼H&  H$             $     $W ☼" +
+        "☼H  ####H######      W  #####☼" +
+        "☼H      H      H#######H    &☼" +
+        "☼##############H      WH#####☼" +
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+    );
+
+    const heroPoint = board.getHero();
+
+    const allPath = findPathsFromPoint(board, heroPoint);
+    
+    const shortestPath = allPath.find(path => path.isFinished && path.isTheFirstShortest)
+
+    assertEquals(",srightdown,right,sleftdown,left,down,left",
+         shortestPath.directions.toString());
+}
+
+const testFindPathFromBlocked4 = () => {
+    let board = new Board(
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"+
+        "☼                   $  &&    ☼"+
+        "☼##H########################H☼"+
+        "☼  H      &    &            H☼"+
+        "☼H☼☼#☼☼H &  H#########H  W  H☼"+
+        "☼H     H    H         H#####H☼"+
+        "☼H#☼#☼#H   $H         H  ~~~ ☼"+
+        "☼H  ~  H~~~~H~~J~~~)  H      ☼"+
+        "☼H$    H    H    ►H###☼☼☼☼☼☼H☼"+
+        "☼H   & H    X#####H         H☼"+
+        "☼☼###☼##☼##☼H&&       H###H##☼"+
+        "☼☼###☼~~~~$ H & m     H   H##☼"+
+        "☼☼   ☼  &   H   ~~~~~~H& $H  ☼"+
+        "☼########H###☼☼☼☼     H  ####☼"+
+        "☼W &     H@$     W    H  @   ☼"+
+        "☼H##########################H☼"+
+        "☼H    » • • • • W •~~~      H☼"+
+        "☼#######H#######            H☼"+
+        "☼       H~~~~~~~~~~   $     H☼"+
+        "☼       H   $##H   #######H##☼"+
+        "☼       X    ##H&   @     H  ☼"+
+        "☼##H#####    ########H#######☼"+
+        "☼  H       &m    &   H  &    ☼"+
+        "☼#########H##########H       ☼"+
+        "☼ @ W     H &        H  $    ☼"+
+        "☼☼☼    $  H~~~~~~~~~~H       ☼"+
+        "☼ @  H######&     &  #######H☼"+
+        "☼H☼  H                m   & H☼"+
+        "☼##########☼☼☼######☼☼######H☼"+
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+    );
+
+    const heroPoint = board.getHero();
+
+    const allPath = findPathsFromPoint(board, heroPoint);
+    
+    const shortestPath = allPath.find(path => path.isFinished && path.isTheFirstShortest)
+
+    assertEquals(",srightdown,right,sleftdown,left,down,left",
          shortestPath.directions.toString());
 }
 
