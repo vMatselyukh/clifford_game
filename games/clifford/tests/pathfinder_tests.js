@@ -370,7 +370,7 @@ const testFindPathFromBlocked2 = () => {
 
     const shortestPath = getTheBestPath(board, heroPoint);
 
-    assertEquals(",right,srightdown,right,right,down,sleftdown,left",
+    assertEquals(",left,up,left,sleftdown,left",
          shortestPath.directions.toString());
 }
 
@@ -412,7 +412,7 @@ const testFindPathFromBlocked3 = () => {
 
     const shortestPath = getTheBestPath(board, heroPoint);
 
-    assertEquals(",right,srightdown,right,down,sleftdown,left,down,left,left",
+    assertEquals(",right,srightdown,right,down,sleftdown,left,left,left",
          shortestPath.directions.toString());
 }
 
@@ -454,7 +454,7 @@ const testFindPathFromBlocked4 = () => {
 
     const shortestPath = getTheBestPath(board, heroPoint);
 
-    assertEquals(",left,left,sleftdown,left",
+    assertEquals(",sleftdown,left",
          shortestPath.directions.toString());
 }
 
@@ -719,5 +719,66 @@ const testBug1 = () => {
          shortestPath);
 }
 
+☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼
+☼~~~~~~~~~~           ~~~~~~~☼
+☼HH  W    H##########H  &    ☼
+☼######H  H          H#☼☼☼☼☼#☼
+☼ $    H#####H#####H##$ ~~~~~☼
+☼      H ~   HW    H  ~~     ☼
+☼#####H#     H   $ H    ~~   ☼
+☼   & H   H######H##      ~~&☼
+☼     H~~~H      H &    $   #☼
+☼     H      H#########H     ☼
+☼    H##     H#$$     ##   $ ☼
+☼H###H######### H###H #####H#☼
+☼H   H          H# #H      H ☼
+☼H#######   ###### ##########☼
+☼H         $ @             & ☼
+☼H#######~~~####H############☼
+☼H              H        m   ☼
+☼##H~~~~      ############H  ☼
+☼  H           m   & &&&W H &☼
+☼########~~~~~~~H######## Hm$☼
+☼               H         H& ☼
+☼~~~~& ~~~#########~~~~~  H  ☼
+☼H$ «)               W~~~~H&&☼
+☼##☼☼☼☼☼☼# & ☼☼☼☼☼☼☼@ &  &H &☼
+☼~~      ~~~              H &☼
+☼  H#####   ########### & H@ ☼
+☼  H  ◄    x~~~~~~~~~~~~~~H@ ☼
+☼  H#y##H               W H@ ☼
+☼☼☼☼☼☼☼☼☼######☼☼☼☼☼☼☼#######☼
+☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼
+
+☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼
+☼~~~~~~~~~~ &   &  &  ~~~~~~~☼
+☼HH & &   H##########H  $    ☼
+☼######H  H      &   H#☼☼☼☼☼#☼
+☼      H#####H#####H##  ~~~~~☼
+☼      H ~   H  && H  ~~&  & ☼
+☼#####H#     H   m H   &~~ $ ☼
+☼&   mH   H######H##   $& ~~»☼
+☼m    H~~~H      H   $@     #☼
+☼    $H      H#########H    &☼
+☼    H##     H#    $&&## W   ☼
+☼H###H######### H###H #####H#☼
+☼H@  H       @ @H# #H      H ☼
+☼H#######$  ###### ##########☼
+☼H      $       & &  $       ☼
+☼H#######~~~####H############☼
+☼H   &          H&   W       ☼
+☼##H~~~~    W ############H$ ☼
+☼  H                      H  ☼
+☼########~~~~~~~H######## H  ☼
+☼               H         H  ☼
+☼~~~~  ~~~#########~~~~~  H  ☼
+☼H                W   ~~~~H  ☼
+☼##☼☼☼☼☼☼# W ☼☼☼☼☼☼☼      H  ☼
+☼~~      ~~~     ►        H  ☼
+☼  H#####   ######y####   H @☼
+☼  H        ~~~~~~~~~~~~Y~H  ☼
+☼  H####H             )   H  ☼
+☼☼☼☼☼☼☼☼☼######☼☼☼☼☼☼☼#######☼
+☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼
 
 module.exports = PathFinderTests;

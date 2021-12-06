@@ -55,7 +55,7 @@ const findTheBestPathToTreasures = (board, myPosition) => {
 
     const orderedPaths = allPaths
         .filter(path => path.isFinished && path.isTreasureFound)
-        .sort((path1, path2) => path1.pathLength - path2.pathLength);
+        .sort((path1, path2) => (path1.pathLength + path1.directionsLength) - (path2.pathLength + path2.directionsLength));
 
     if (orderedPaths.length > 0) {
         return orderedPaths[0];
@@ -125,7 +125,7 @@ const addNextPointIfPossible = (board, position, direction, allPaths, visitedPoi
         || board.contains(allPaths[index].removedBarriers, new Point(position.x + x, position.y + y))) {
         const nextPoint = getTheNextPoint(board, allPaths[index], new Point(position.x + x, position.y + y), ground_cached, pipes_cached);
 
-        if(!isTheNextPointSafe(board, nextPoint))
+        if(!isTheNextPointSafe(board, nextPoint, position))
         {
             return;
         }
@@ -147,11 +147,13 @@ const addNextPointIfPossible = (board, position, direction, allPaths, visitedPoi
     }
 }
 
-const isTheNextPointSafe = (board, nextPoint) => {
-    if(board.contains(robbers_cached, new Point(nextPoint.x+1, nextPoint.y+1))
-        || board.contains(robbers_cached, new Point(nextPoint.x-1, nextPoint.y+1))
-        || board.contains(robbers_cached, new Point(nextPoint.x+1, nextPoint.y-1))
-        || board.contains(robbers_cached, new Point(nextPoint.x-1, nextPoint.y-1))
+const isTheNextPointSafe = (board, nextPoint, myPosition) => {
+    if(board.contains(robbers_cached, new Point(nextPoint.x+1, nextPoint.y+1)) && !board.contains(robbers_cached, new Point(myPosition.x, myPosition.y+1))
+        || board.contains(robbers_cached, new Point(nextPoint.x-1, nextPoint.y+1)) && !board.contains(robbers_cached, new Point(myPosition.x, myPosition.y+1))
+        || board.contains(robbers_cached, new Point(nextPoint.x+1, nextPoint.y-1)) && !board.contains(robbers_cached, new Point(myPosition.x, myPosition.y))
+        || board.contains(robbers_cached, new Point(nextPoint.x-1, nextPoint.y-1)) && !board.isAt(myPosition.x, myPosition.y, Element.HERO_LADDER)
+        || board.contains(robbers_cached, new Point(nextPoint.x-1, nextPoint.y))
+        || board.contains(robbers_cached, new Point(nextPoint.x+1, nextPoint.y))
     ) {
         return false;
     }

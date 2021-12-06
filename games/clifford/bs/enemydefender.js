@@ -45,6 +45,9 @@ const decreaseBulletCounter = (bullet_array) => {
 
 const setBulletCounter = (bullet_array, y, distance) => {
     const counter = distance / 1;
+    if(counter === 0){
+        counter = 1;
+    }    
     if (!bullet_array.find(bullet => bullet.y === y)) {
         bullet_array.push({ y: y, counter: counter });
     } else {

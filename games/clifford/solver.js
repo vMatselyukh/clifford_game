@@ -67,7 +67,7 @@ var CliffordSolver = module.exports = {
       return Direction.SHOOT_RIGHT;
     }
 
-    let neededPath = getTheBestPath(board, myPosition);
+    let neededPath = getTheBestPath(board, myPosition, potion_taken);
     if (neededPath === null) {
       return Direction.STOP;
     }
@@ -102,6 +102,8 @@ const setNextItem = (board, nextPoint) => {
   if(board.isAt(nextPoint.x, nextPoint.y, Element.MASK_POTION)) {
     next_item = Element.MASK_POTION;
   }
+
+  next_item = Element.NONE;
 }
 
 const activateNextItem = () => {
