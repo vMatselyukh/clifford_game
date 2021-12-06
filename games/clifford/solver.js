@@ -26,98 +26,17 @@ const Direction = Games.require('./direction.js');
 const Element = Games.require('./elements.js');
 const Stuff = require('./../../engine/stuff.js');
 const { getTheBestPath } = require("./bs/pathfinder");
+const { MovementManager } = require("./bs/movementmanager");
 const { getEnemyLeftDistance, getEnemyRightDistance,
   decreaseBulletCounter, setBulletCounter,
   digHoleIfNeeded } = require("./bs/enemydefender");
 const board = require('../../engine/board.js');
 
-const bullets_array = [];
-const mask_potion_duration = 15;
-let potion_time = 0;
-let potion_taken = false;
-let next_item = null;
+
 
 var CliffordSolver = module.exports = {
   get: function (board) {
-    decreaseBulletCounter(bullets_array);
-    
-    deactivateItem();
-    activateNextItem();
-
-    const robbers_cached = board.getRobbers();
-
-    let myPosition = board.getHero();
-
-    let digHoleIfNeededResult = digHoleIfNeeded(board, myPosition, robbers_cached);
-    if (digHoleIfNeededResult !== null) {
-      return selectDirection(digHoleIfNeededResult);
-    }
-
-    let myBullet = bullets_array.find(bullet => bullet.y == myPosition.y && bullet.counter > 0);
-
-    const enemyLeftDistance = getEnemyLeftDistance(board, myPosition);
-    const enemyRightDistance = getEnemyRightDistance(board, myPosition);
-
-    if (enemyLeftDistance > 0 && myBullet === undefined) {
-      setBulletCounter(bullets_array, myPosition.y, enemyLeftDistance);
-      return Direction.SHOOT_LEFT;
-    }
-    else if (enemyRightDistance > 0 && myBullet === undefined) {
-      setBulletCounter(bullets_array, myPosition.y, enemyRightDistance);
-      return Direction.SHOOT_RIGHT;
-    }
-
-    let neededPath = getTheBestPath(board, myPosition, potion_taken);
-    if (neededPath === null) {
-      return Direction.STOP;
-    }
-
-    let stringDirection = neededPath.directions[1];
-    setNextItem(board, neededPath.points[1]);
-
-    return selectDirection(stringDirection);
+    const movementmanager = new MovementManager(board);
+    return movementmanager.getTheNextMove(board);
   },
-}
-
-const selectDirection = (stringDirection) => {
-  switch (stringDirection) {
-    case "left":
-      return Direction.LEFT;
-    case "right":
-      return Direction.RIGHT;
-    case "up":
-      return Direction.UP;
-    case "down":
-      return Direction.DOWN;
-    case "sleftdown":
-      return Direction.CRACK_LEFT;
-    case "srightdown":
-      return Direction.CRACK_RIGHT;
-    default:
-      return Direction.STOP;
-  }
-}
-
-const setNextItem = (board, nextPoint) => {
-  if(board.isAt(nextPoint.x, nextPoint.y, Element.MASK_POTION)) {
-    next_item = Element.MASK_POTION;
-  }
-
-  next_item = Element.NONE;
-}
-
-const activateNextItem = () => {
-  if(next_item === Element.MASK_POTION) {
-    potion_taken = true;
-    potion_time = mask_potion_duration;
-  }
-}
-
-const deactivateItem = () => {  
-  if(potion_time > 0) {
-    potion_time --;
-  } else {
-    potion_time = 0;
-    potion_taken = false;
-  }
 }

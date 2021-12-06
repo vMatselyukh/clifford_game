@@ -2,6 +2,8 @@ const Element = require("../elements.js");
 const Direction = require("../direction.js");
 const Point = require("./../../../engine/point.js");
 const { CliffordPath } = require("./path.js");
+const { MovementManager } = require("./movementmanager.js");
+const { GameConstants } = require("./gameconstants");
 
 let treasures_cached = [];
 let barriers_cached = [];
@@ -11,12 +13,6 @@ let ladders_cached = [];
 let robbers_cached = [];
 let shootable_barriers_cached = [];
 const match_found_key = "stop";
-const left_direction = "left";
-const right_direction = "right";
-const up_direction = "up";
-const down_direction = "down";
-const shoot_left_down_direction = "sleftdown";
-const shoot_right_down_direction = "srightdown";
 const loops_till_end = 3;
 
 const getTreasuresOnBoard = (board) => {
@@ -111,14 +107,14 @@ const addNextPointIfPossible = (board, position, direction, allPaths, visitedPoi
         y = 0,
         shootDownX = 0;
 
-    x = direction == right_direction ? 1 : x;
-    x = direction == left_direction ? -1 : x;
+    x = direction == GameConstants.right_direction ? 1 : x;
+    x = direction == GameConstants.left_direction ? -1 : x;
 
-    y = direction == up_direction ? 1 : y;
-    y = direction == down_direction ? -1 : y;
+    y = direction == GameConstants.up_direction ? 1 : y;
+    y = direction == GameConstants.down_direction ? -1 : y;
 
-    shootDownX = direction == shoot_left_down_direction ? -1 : shootDownX;
-    shootDownX = direction == shoot_right_down_direction ? 1 : shootDownX;
+    shootDownX = direction == GameConstants.shoot_left_down_direction ? -1 : shootDownX;
+    shootDownX = direction == GameConstants.shoot_right_down_direction ? 1 : shootDownX;
 
     if (!board.isBarrierAtCached(position.x + x, position.y + y, barriers_cached)
         && !board.isBarrierAtCached(position.x + shootDownX, position.y + y, barriers_cached)
@@ -135,7 +131,7 @@ const addNextPointIfPossible = (board, position, direction, allPaths, visitedPoi
             return match_found_key;
         }
 
-        if ([shoot_left_down_direction, shoot_right_down_direction].includes(direction)) {
+        if ([GameConstants.shoot_left_down_direction, GameConstants.shoot_right_down_direction].includes(direction)) {
             if (processShootingInTheFloor(board, position, allPaths, index, direction) === match_found_key) {
                 return match_found_key;
             }
@@ -164,10 +160,10 @@ const isTheNextPointSafe = (board, nextPoint, myPosition) => {
 const processShootingInTheFloor = (board, position, allPaths, index, direction) => {
     let shootx = 0,
         shooty = -1;
-    const nextDirection = direction == shoot_left_down_direction ? left_direction : right_direction;
+    const nextDirection = direction == GameConstants.shoot_left_down_direction ? GameConstants.left_direction : GameConstants.right_direction;
 
-    shootx = direction == shoot_left_down_direction ? -1 : shootx;
-    shootx = direction == shoot_right_down_direction ? 1 : shootx;
+    shootx = direction == GameConstants.shoot_left_down_direction ? -1 : shootx;
+    shootx = direction == GameConstants.shoot_right_down_direction ? 1 : shootx;
 
     if (board.isShootableBarrierAtCached(position.x + shootx, position.y + shooty, shootable_barriers_cached)
         && board.isAt(position.x + shootx, position.y, Element.NONE)
@@ -212,33 +208,33 @@ const findAllPaths = (board, allPaths, visitedPointsList, endloop = -1) => {
         const theLastPoint = allPaths[i].points.slice(-1)[0];
 
         //go right if possible
-        if (addNextPointIfPossible(board, theLastPoint, right_direction, allPaths, visitedPointsList, i) === match_found_key) {
+        if (addNextPointIfPossible(board, theLastPoint, GameConstants.right_direction, allPaths, visitedPointsList, i) === match_found_key) {
             isMatchFound = true;
         }
 
         //go left if possible
-        if (addNextPointIfPossible(board, theLastPoint, left_direction, allPaths, visitedPointsList, i) === match_found_key) {
+        if (addNextPointIfPossible(board, theLastPoint, GameConstants.left_direction, allPaths, visitedPointsList, i) === match_found_key) {
             isMatchFound = true;
         }
 
         //go up if possible
         if (board.isLadderAtCached(theLastPoint.x, theLastPoint.y, ladders_cached)
-            && addNextPointIfPossible(board, theLastPoint, up_direction, allPaths, visitedPointsList, i) === match_found_key) {
+            && addNextPointIfPossible(board, theLastPoint, GameConstants.up_direction, allPaths, visitedPointsList, i) === match_found_key) {
             isMatchFound = true;
         }
 
         //go down if possible
-        if (addNextPointIfPossible(board, theLastPoint, down_direction, allPaths, visitedPointsList, i) === match_found_key) {
+        if (addNextPointIfPossible(board, theLastPoint, GameConstants.down_direction, allPaths, visitedPointsList, i) === match_found_key) {
             isMatchFound = true;
         }
 
         //shoot left if possible
-        if (addNextPointIfPossible(board, theLastPoint, shoot_left_down_direction, allPaths, visitedPointsList, i) === match_found_key) {
+        if (addNextPointIfPossible(board, theLastPoint, GameConstants.shoot_left_down_direction, allPaths, visitedPointsList, i) === match_found_key) {
             isMatchFound = true;
         }
 
         //shoot right if possible
-        if (addNextPointIfPossible(board, theLastPoint, shoot_right_down_direction, allPaths, visitedPointsList, i) === match_found_key) {
+        if (addNextPointIfPossible(board, theLastPoint, GameConstants.shoot_right_down_direction, allPaths, visitedPointsList, i) === match_found_key) {
             isMatchFound = true;
         }
 
