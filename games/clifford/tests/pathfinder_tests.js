@@ -2,13 +2,14 @@
 //◄
 //$ & @ - treasures
 
-const { getTreasuresOnBoard, getTheNextPoint, findPathsFromPoint } = require("../bs/pathfinder.js");
+const { getTreasuresOnBoard, getTheNextPoint, getTheBestPath } = require("../bs/pathfinder.js");
 const { CliffordPath } = require("../bs/path.js");
 const { assertEquals } = require("./basetests.js");
 var Games = require('./../../../engine/games.js');
 var Board = Games.require('../board.js');
 var Direction = Games.require('../direction.js');
 const Point = require('./../../../engine/point.js');
+const { digHoleIfNeeded, getEnemyRightDistance, getEnemyLeftDistance, setBulletCounter } = require("../bs/enemydefender");
 
 const PathFinderTests = () => {
     testGetTreasuresOnBoard();
@@ -21,6 +22,12 @@ const PathFinderTests = () => {
     testFindPathFromBlocked2();
     testFindPathFromBlocked3();
     testFindPathFromBlocked4();
+    testFindPathFromBlocked5();
+    testFindPathFromBlocked6();
+    testDigHole();
+    testGetEnemyLeftDistance();
+    testSetBulletCounter();
+    testBug1();
 }
 
 const testGetTreasuresOnBoard = () => {
@@ -193,10 +200,8 @@ const testFindPathFromPoint = () => {
 
     const heroPoint = board.getHero();
 
-    const allPath = findPathsFromPoint(board, heroPoint);
+    const shortestPath = getTheBestPath(board, heroPoint);
     
-    const shortestPath = allPath.find(path => path.isFinished && path.isTheFirstShortest)
-
     assertEquals(",srightdown,right,down",
         shortestPath.directions.toString());
 }
@@ -237,9 +242,7 @@ const testFindPathFromPipe = () => {
 
     const heroPoint = board.getHero();
 
-    const allPath = findPathsFromPoint(board, heroPoint);
-    
-    const shortestPath = allPath.find(path => path.isFinished && path.isTheFirstShortest)
+    const shortestPath = getTheBestPath(board, heroPoint);
 
     assertEquals(",left,left,down",
         shortestPath.directions.toString());
@@ -281,9 +284,7 @@ const testFindPathFromBlocked = () => {
 
     const heroPoint = board.getHero();
 
-    const allPath = findPathsFromPoint(board, heroPoint);
-    
-    const shortestPath = allPath.find(path => path.isFinished && path.isTheFirstShortest)
+    const shortestPath = getTheBestPath(board, heroPoint);
 
     assertEquals(",right,srightdown,right",
          shortestPath.directions.toString());
@@ -325,11 +326,9 @@ const testFindPathFromBlocked1 = () => {
 
     const heroPoint = board.getHero();
 
-    const allPath = findPathsFromPoint(board, heroPoint);
-    
-    const shortestPath = allPath.find(path => path.isFinished && path.isTheFirstShortest)
+    const shortestPath = getTheBestPath(board, heroPoint);
 
-    assertEquals(",srightdown,right,down,srightdown,right",
+    assertEquals(",left,up,left,left",
          shortestPath.directions.toString());
 }
 
@@ -369,11 +368,9 @@ const testFindPathFromBlocked2 = () => {
 
     const heroPoint = board.getHero();
 
-    const allPath = findPathsFromPoint(board, heroPoint);
-    
-    const shortestPath = allPath.find(path => path.isFinished && path.isTheFirstShortest)
+    const shortestPath = getTheBestPath(board, heroPoint);
 
-    assertEquals(",srightdown,right,down,srightdown,right",
+    assertEquals(",right,srightdown,right,right,down,sleftdown,left",
          shortestPath.directions.toString());
 }
 
@@ -413,11 +410,9 @@ const testFindPathFromBlocked3 = () => {
 
     const heroPoint = board.getHero();
 
-    const allPath = findPathsFromPoint(board, heroPoint);
-    
-    const shortestPath = allPath.find(path => path.isFinished && path.isTheFirstShortest)
+    const shortestPath = getTheBestPath(board, heroPoint);
 
-    assertEquals(",srightdown,right,sleftdown,left,down,left",
+    assertEquals(",right,srightdown,right,down,sleftdown,left,down,left,left",
          shortestPath.directions.toString());
 }
 
@@ -457,12 +452,272 @@ const testFindPathFromBlocked4 = () => {
 
     const heroPoint = board.getHero();
 
-    const allPath = findPathsFromPoint(board, heroPoint);
-    
-    const shortestPath = allPath.find(path => path.isFinished && path.isTheFirstShortest)
+    const shortestPath = getTheBestPath(board, heroPoint);
 
-    assertEquals(",srightdown,right,sleftdown,left,down,left",
+    assertEquals(",left,left,sleftdown,left",
          shortestPath.directions.toString());
 }
+
+const testFindPathFromBlocked5 = () => {
+    let board = new Board(
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+        "☼~~~~~~~~~~     &     ~~~~~~~☼" +
+        "☼HH       H##########H  &    ☼" +
+        "☼######H  H   W    $ H#☼☼☼☼☼#☼" +
+        "☼      H#####H#####H##  ~~~~~☼" +
+        "☼      H&~   H @   H  ~~     ☼" +
+        "☼#####H#  )  H     H    ~~ & ☼" +
+        "☼     H   H######H##      ~~$☼" +
+        "☼ &&$ H~~~H &W   H    @     #☼" +
+        "☼     H      H#########H     ☼" +
+        "☼   &H##     H#  &    ##   $ ☼" +
+        "☼H###H######### H###H #####H#☼" +
+        "☼H   H &  $     H# #H      H ☼" +
+        "☼H#######   ###### ##########☼" +
+        "☼H     »    $   &$         $ ☼" +
+        "☼H#######~~~####H############☼" +
+        "☼H            @ H»   $ @ @  &☼" +
+        "☼##H~~~~      ############H  ☼" +
+        "☼  H     & &              H  ☼" +
+        "☼########~~~~~~~H######## H  ☼" +
+        "☼m    m       & H  W      H  ☼" +
+        "☼~~~~ m~~~#########~~~~~  H  ☼" +
+        "☼H    &  &     &      ~~~~H  ☼" +
+        "☼##☼☼☼☼☼☼#   ☼☼☼☼☼☼☼      H  ☼" +
+        "☼~~      ~~~         ►  &$H  ☼" +
+        "☼  H#####W  ###########W  X  ☼" +
+        "☼  H )      ~~~~~~~~~~~~~~H  ☼" +
+        "☼  H####H                 H  ☼" +
+        "☼☼☼☼☼☼☼☼☼######☼☼☼☼☼☼☼#######☼" +
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+    );
+
+    const heroPoint = board.getHero();
+
+    const shortestPath = getTheBestPath(board, heroPoint);
+
+    assertEquals(",right,right",
+         shortestPath.directions.toString());
+}
+
+const testFindPathFromBlocked6 = () => {
+    let board = new Board(
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+        "☼~~~~~~~~~~   @$$     ~~~~~~~☼" +
+        "☼HH  $    H##########H  $m   ☼" +
+        "☼######H  H   $      H#☼☼☼☼☼#☼" +
+        "☼    @ H#####H#####H##  ~~~~~☼" +
+        "☼W   & H ~   H m&  H  ~~    W☼" +
+        "☼#####H#     H    @H $ &~~   ☼" +
+        "☼  &  H   H######H##     $~~ ☼" +
+        "☼     H~~~H &  W H      m   #☼" +
+        "☼     H      H#########H     ☼" +
+        "☼    H## &   H#       ## (   ☼" +
+        "☼H###H######### H###H #####H#☼" +
+        "☼H   H          H# #H     ►H ☼" +
+        "☼H#######   ###### ##########☼" +
+        "☼H          »              & ☼" +
+        "☼H#######~~~####H############☼" +
+        "☼H   &          H   &        ☼" +
+        "☼##H~~~~&     ############H  ☼" +
+        "☼» H                      H  ☼" +
+        "☼########~~~~~~~H########&H  ☼" +
+        "☼   $       $   H         H& ☼" +
+        "☼~~~~  ~~~#########~~~~~  H  ☼" +
+        "☼H                    ~~~~H  ☼" +
+        "☼##☼☼☼☼☼☼#x &☼☼☼☼☼☼☼  &   H  ☼" +
+        "☼~~      ~~~(&   &     & &H  ☼" +
+        "☼  H#####   ###########  WH  ☼" +
+        "☼  H    $   ~~~~~~~~~~~~~~H  ☼" +
+        "☼  H####H   »W  @@&       H  ☼" +
+        "☼☼☼☼☼☼☼☼☼######☼☼☼☼☼☼☼#######☼" +
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+    );
+
+    const heroPoint = board.getHero();
+
+    const shortestPath = getTheBestPath(board, heroPoint);
+
+    assertEquals(",right,srightdown,right,left",
+         shortestPath.directions.toString());
+}
+
+const testDigHole = () => {
+    let board = new Board(
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+        "☼~~~~~~~~~~   @$$     ~~~~~~~☼" +
+        "☼HH  $    H##########H  $m   ☼" +
+        "☼######H  H   $      H#☼☼☼☼☼#☼" +
+        "☼    @ H#####H#####H##  ~~~~~☼" +
+        "☼W   & H ~   H m&  H  ~~    W☼" +
+        "☼#####H#     H    @H $ &~~   ☼" +
+        "☼  &  H   H######H##     $~~ ☼" +
+        "☼     H~~~H &  W H      m   #☼" +
+        "☼     H      H#########H     ☼" +
+        "☼    H## &   H#       ## (   ☼" +
+        "☼H###H######### H###H #####H#☼" +
+        "☼H   H          H# #H   ) ►H ☼" +
+        "☼H#######   ###### ##########☼" +
+        "☼H          »              & ☼" +
+        "☼H#######~~~####H############☼" +
+        "☼H   &          H   &        ☼" +
+        "☼##H~~~~&     ############H  ☼" +
+        "☼» H                      H  ☼" +
+        "☼########~~~~~~~H########&H  ☼" +
+        "☼   $       $   H         H& ☼" +
+        "☼~~~~  ~~~#########~~~~~  H  ☼" +
+        "☼H                    ~~~~H  ☼" +
+        "☼##☼☼☼☼☼☼#x &☼☼☼☼☼☼☼  &   H  ☼" +
+        "☼~~      ~~~(&   &     & &H  ☼" +
+        "☼  H#####   ###########  WH  ☼" +
+        "☼  H    $   ~~~~~~~~~~~~~~H  ☼" +
+        "☼  H####H   »W  @@&       H  ☼" +
+        "☼☼☼☼☼☼☼☼☼######☼☼☼☼☼☼☼#######☼" +
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+    );
+
+    const heroPoint = board.getHero();
+    const robbers = board.getRobbers();
+    const diggingResult = digHoleIfNeeded(board, heroPoint, robbers);
+
+    assertEquals("sleftdown",
+         diggingResult);
+}
+
+const testGetEnemyLeftDistance = () => {
+    let board = new Board(
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+        "☼~~~~~~~~~~   @$$     ~~~~~~~☼" +
+        "☼HH  $    H##########H  $m   ☼" +
+        "☼######H  H   $      H#☼☼☼☼☼#☼" +
+        "☼    @ H#####H#####H##  ~~~~~☼" +
+        "☼W   & H ~   H m&  H  ~~    W☼" +
+        "☼#####H#     H    @H $ &~~   ☼" +
+        "☼  &  H   H######H##     $~~ ☼" +
+        "☼     H~~~H &  W H      m   #☼" +
+        "☼     H      H#########H     ☼" +
+        "☼    H## &   H#       ## (   ☼" +
+        "☼H###H######### H###H #####H#☼" +
+        "☼H   H          H# #HP    ►H ☼" +
+        "☼H#######   ###### ##########☼" +
+        "☼H          »              & ☼" +
+        "☼H#######~~~####H############☼" +
+        "☼H   &          H   &        ☼" +
+        "☼##H~~~~&     ############H  ☼" +
+        "☼» H                      H  ☼" +
+        "☼########~~~~~~~H########&H  ☼" +
+        "☼   $       $   H         H& ☼" +
+        "☼~~~~  ~~~#########~~~~~  H  ☼" +
+        "☼H                    ~~~~H  ☼" +
+        "☼##☼☼☼☼☼☼#x &☼☼☼☼☼☼☼  &   H  ☼" +
+        "☼~~      ~~~(&   &     & &H  ☼" +
+        "☼  H#####   ###########  WH  ☼" +
+        "☼  H    $   ~~~~~~~~~~~~~~H  ☼" +
+        "☼  H####H   »W  @@&       H  ☼" +
+        "☼☼☼☼☼☼☼☼☼######☼☼☼☼☼☼☼#######☼" +
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+    );
+
+    const heroPoint = board.getHero();
+    const distance = getEnemyLeftDistance(board, heroPoint);
+
+    assertEquals(5,
+    distance);
+}
+
+const testSetBulletCounter = () => {
+    let board = new Board(
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+        "☼~~~~~~~~~~   @$$     ~~~~~~~☼" +
+        "☼HH  $    H##########H  $m   ☼" +
+        "☼######H  H   $      H#☼☼☼☼☼#☼" +
+        "☼    @ H#####H#####H##  ~~~~~☼" +
+        "☼W   & H ~   H m&  H  ~~    W☼" +
+        "☼#####H#     H    @H $ &~~   ☼" +
+        "☼  &  H   H######H##     $~~ ☼" +
+        "☼     H~~~H &  W H      m   #☼" +
+        "☼     H      H#########H     ☼" +
+        "☼    H## &   H#       ## (   ☼" +
+        "☼H###H######### H###H #####H#☼" +
+        "☼H   H          H# #HP    ►H ☼" +
+        "☼H#######   ###### ##########☼" +
+        "☼H          »              & ☼" +
+        "☼H#######~~~####H############☼" +
+        "☼H   &          H   &        ☼" +
+        "☼##H~~~~&     ############H  ☼" +
+        "☼» H                      H  ☼" +
+        "☼########~~~~~~~H########&H  ☼" +
+        "☼   $       $   H         H& ☼" +
+        "☼~~~~  ~~~#########~~~~~  H  ☼" +
+        "☼H                    ~~~~H  ☼" +
+        "☼##☼☼☼☼☼☼#x &☼☼☼☼☼☼☼  &   H  ☼" +
+        "☼~~      ~~~(&   &     & &H  ☼" +
+        "☼  H#####   ###########  WH  ☼" +
+        "☼  H    $   ~~~~~~~~~~~~~~H  ☼" +
+        "☼  H####H   »W  @@&       H  ☼" +
+        "☼☼☼☼☼☼☼☼☼######☼☼☼☼☼☼☼#######☼" +
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+    );
+
+    const heroPoint = board.getHero();
+    const distance = getEnemyLeftDistance(board, heroPoint);
+    const bullets_array = [];
+
+    let myBullet = bullets_array.find(bullet => bullet.y == heroPoint.y && bullet.counter > 0);
+    
+    assertEquals(true, distance > 0 && myBullet === undefined);
+
+    setBulletCounter(bullets_array, heroPoint.y, distance);
+
+    assertEquals([{y: heroPoint.y, counter: 5/1}],
+        bullets_array);
+
+    myBullet = bullets_array.find(bullet => bullet.y == heroPoint.y && bullet.counter > 0);
+    
+    assertEquals(false, distance > 0 && myBullet === undefined);
+}
+
+const testBug1 = () => {
+    let board = new Board(
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+        "☼                          & ☼" +
+        "☼##H########################H☼" +
+        "☼  H     $ $   m   @     &  H☼" +
+        "☼H☼☼#☼☼H    H#########H     H☼" +
+        "☼H     H    H         H#####H☼" +
+        "☼H#☼#☼#H  & H W&      H  ~~~ ☼" +
+        "☼H  ~  H~~~~H~~~~~~@  H$C   ►☼" +
+        "☼H     H    H$    H###☼☼☼☼☼☼H☼" +
+        "☼H     H    H#####H        »H☼" +
+        "☼☼###☼##☼##☼H         H###H##☼" +
+        "☼☼###☼~~~~  H$        H & H##☼" +
+        "☼☼   ☼&    (H » ~~~~~~H  &H  ☼" +
+        "☼########H###☼☼☼☼     H &####☼" +
+        "☼        H m&   &     H      ☼" +
+        "☼H##########################H☼" +
+        "☼H          $     &~~~      H☼" +
+        "☼#######H#######        &   H☼" +
+        "☼       H~~~~~~~~~~   $    WH☼" +
+        "☼    W  H&   ##H   #######H##☼" +
+        "☼  @    H    ##H          H  ☼" +
+        "☼##H##### $  ########H#######☼" +
+        "☼  HW        & & $&  H       ☼" +
+        "☼#########H##########H&      ☼" +
+        "☼         H&      @  H   &   ☼" +
+        "☼☼☼     @ H~~~~~~~~~~H  m    ☼" +
+        "☼$  &H######         #######H☼" +
+        "☼H☼  H  »)                W H☼" +
+        "☼##########☼☼☼######☼☼######H☼" +
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+    );
+
+    const heroPoint = board.getHero();
+
+    const shortestPath = getTheBestPath(board, heroPoint);
+
+    assertEquals(null,
+         shortestPath);
+}
+
 
 module.exports = PathFinderTests;

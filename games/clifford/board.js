@@ -126,7 +126,6 @@ var CliffordBoard = module.exports = function(board){
         result = result.concat(board.findAll(Element.ROBBER_RIGHT));
         result = result.concat(board.findAll(Element.ROBBER_FALL));
         result = result.concat(board.findAll(Element.ROBBER_PIPE));
-        result = result.concat(board.findAll(Element.ROBBER_PIT));
         return result;
     }
 
@@ -192,12 +191,24 @@ var CliffordBoard = module.exports = function(board){
         return result;
     }
 
+    board.getClosedDoors = (keys) => {
+        var result = [];
+        result = keys.includes(Element.KEY_GOLD) ? [] : result.concat(board.findAll(Element.CLOSED_DOOR_GOLD));
+        result = keys.includes(Element.KEY_SILVER) ? [] : result.concat(board.findAll(Element.CLOSED_DOOR_SILVER));
+        result = keys.includes(Element.KEY_BRONZE) ? [] : result.concat(board.findAll(Element.CLOSED_DOOR_BRONZE));
+        return result;
+    }
+
     board.getKeys = function() {
         var result = [];
         result = result.concat(board.findAll(Element.KEY_GOLD));
         result = result.concat(board.findAll(Element.KEY_SILVER));
         result = result.concat(board.findAll(Element.KEY_BRONZE));
         return result;
+    }
+
+    board.getBackWays = function(){
+        return board.findAll(Element.BACKWAY);
     }
 
     board.isGameOver = function() {
@@ -207,13 +218,14 @@ var CliffordBoard = module.exports = function(board){
         return result.length > 0;
     }
 
-    board.getBarriers = function() {
+    board.getBarriers = function(isPotionActive = false, keys = []) {
         var all = board.getWalls();
-        all = all.concat(board.getRobbers());
+        all = isPotionActive ? [] : all.concat(board.getRobbers());
         all = all.concat(board.getOtherHeroes());
         all = all.concat(board.getEnemyHeroes());
         all = all.concat(board.getWalls());
         all = all.concat(board.getBullets());
+        all = all.concat(board.getClosedDoors(keys));
         return board.removeDuplicates(all);
     };
 
