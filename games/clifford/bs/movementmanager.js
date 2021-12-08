@@ -70,7 +70,7 @@ class MovementManager {
         }
 
         let neededPath = getTheBestPath(this.board, myPosition, this.potion_taken);
-        if (neededPath === null) {
+        if (!neededPath) {
             return Direction.STOP;
         }
 

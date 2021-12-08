@@ -185,10 +185,10 @@ const isTheNextPointSafe = (board, nextPoint) => {
     if (board.contains(robbers_cached, new Point(nextPoint.x + 1, nextPoint.y + 1)) 
         || board.contains(robbers_cached, new Point(nextPoint.x, nextPoint.y + 1))
         || board.contains(robbers_cached, new Point(nextPoint.x - 1, nextPoint.y + 1)) 
-        || board.contains(robbers_cached, new Point(nextPoint.x + 1, nextPoint.y - 1)) && !board.contains(robbers_cached, new Point(myPosition.x, myPosition.y))
+        || board.contains(robbers_cached, new Point(nextPoint.x + 1, nextPoint.y - 1))
         || board.contains(robbers_cached, new Point(nextPoint.x, nextPoint.y - 1)) && !board.isAt(nextPoint.x, nextPoint.y - 1, Element.ROBBER_PIT)
-        || board.contains(robbers_cached, new Point(nextPoint.x - 1, nextPoint.y))
-        || board.contains(robbers_cached, new Point(nextPoint.x + 1, nextPoint.y))
+        || board.contains(robbers_cached, new Point(nextPoint.x - 1, nextPoint.y)) && !board.isAt(nextPoint.x - 1, nextPoint.y, Element.ROBBER_PIT)
+        || board.contains(robbers_cached, new Point(nextPoint.x + 1, nextPoint.y)) && !board.isAt(nextPoint.x + 1, nextPoint.y, Element.ROBBER_PIT)
     ) {
         return false;
     }

@@ -61,7 +61,8 @@ const setBulletCounter = (bullet_array, y, distance) => {
 }
 
 const isBotRight = (board, myPosition, robbers_cached) => {
-    if (board.contains(robbers_cached, new Point(myPosition.x + 2, myPosition.y))) {
+    if (board.contains(robbers_cached, new Point(myPosition.x + 2, myPosition.y))
+        && !board.isAt(myPosition.x + 2, myPosition.y, Element.ROBBER_FALL)) {
         return true;
     }
 
@@ -69,7 +70,8 @@ const isBotRight = (board, myPosition, robbers_cached) => {
 }
 
 const isBotLeft = (board, myPosition, robbers_cached) => {
-    if (board.contains(robbers_cached, new Point(myPosition.x - 2, myPosition.y))) {
+    if (board.contains(robbers_cached, new Point(myPosition.x - 2, myPosition.y))
+        && !board.isAt(myPosition.x - 2, myPosition.y, Element.ROBBER_FALL)) {
         return true;
     }
 
