@@ -27,8 +27,12 @@ var Board = Games.require('./board.js');
 var Element = Games.require('./elements.js');
 const {baseTests} = require('./tests/basetests.js');
 const PathFinderTests = require("./tests/pathfinder_tests");
+const MovemeneManagerTests = require("./tests/movementmanager_tests");
+const PathTests = require("./tests/pathtests");
 
 var CliffordTest = module.exports = function(){
     baseTests();
     PathFinderTests();
+    MovemeneManagerTests();
+    PathTests();
 }

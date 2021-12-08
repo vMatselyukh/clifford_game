@@ -25,7 +25,6 @@ const Point = require('./../../engine/point.js');
 const Direction = Games.require('./direction.js');
 const Element = Games.require('./elements.js');
 const Stuff = require('./../../engine/stuff.js');
-const { getTheBestPath } = require("./bs/pathfinder");
 const { MovementManager } = require("./bs/movementmanager");
 const { getEnemyLeftDistance, getEnemyRightDistance,
   decreaseBulletCounter, setBulletCounter,

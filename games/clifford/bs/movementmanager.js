@@ -51,7 +51,7 @@ class MovementManager {
 
         let digHoleIfNeededResult = digHoleIfNeeded(this.board, myPosition, robbers_cached);
         if (digHoleIfNeededResult !== null) {
-            return selectDirection(digHoleIfNeededResult);
+            return this.convertCustomToGameDirection(digHoleIfNeededResult);
         }
 
         let myBullet = this.bullets_array.find(bullet => bullet.y == myPosition.y && bullet.counter > 0);
@@ -60,11 +60,11 @@ class MovementManager {
         const enemyRightDistance = getEnemyRightDistance(this.board, myPosition);
 
         if (enemyLeftDistance > 0 && myBullet === undefined) {
-            setBulletCounter(bullets_array, myPosition.y, enemyLeftDistance);
+            setBulletCounter(this.bullets_array, myPosition.y, enemyLeftDistance);
             return Direction.SHOOT_LEFT;
         }
         else if (enemyRightDistance > 0 && myBullet === undefined) {
-            setBulletCounter(bullets_array, myPosition.y, enemyRightDistance);
+            setBulletCounter(this.bullets_array, myPosition.y, enemyRightDistance);
             return Direction.SHOOT_RIGHT;
         }
 

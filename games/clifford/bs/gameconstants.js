@@ -6,6 +6,9 @@ class GameConstants{
     static down_direction = "down";
     static shoot_left_down_direction = "sleftdown";
     static shoot_right_down_direction = "srightdown";
+    static left_falling_down_direction = "leftfallingdown";
+    static right_falling_down_direction = "rightfallingdown";
+    static falling_down_direction = "fallingdown";
 
     //constants
     static mask_potion_duration = 15;
