@@ -8,8 +8,9 @@ const { getEnemyLeftDistance, getEnemyRightDistance,
   digHoleIfNeeded } = require("./enemydefender");
 const { GameConstants } = require("./gameconstants");
 
-class MovementManager {
-    bullets_array = [];
+const bullets_array = [];
+
+class MovementManager {    
     potion_time = 0;
     potion_taken = false;
     next_item = null;
@@ -40,7 +41,7 @@ class MovementManager {
     }
 
     getTheNextMove = () => {
-        decreaseBulletCounter(this.bullets_array);
+        decreaseBulletCounter(bullets_array);
 
         this.deactivateItem();
         this.activateNextItem();
@@ -54,17 +55,17 @@ class MovementManager {
             return this.convertCustomToGameDirection(digHoleIfNeededResult);
         }
 
-        let myBullet = this.bullets_array.find(bullet => bullet.y == myPosition.y && bullet.counter > 0);
+        let myBullet = bullets_array.find(bullet => bullet.y == myPosition.y && bullet.counter > 0);
 
         const enemyLeftDistance = getEnemyLeftDistance(this.board, myPosition);
         const enemyRightDistance = getEnemyRightDistance(this.board, myPosition);
 
         if (enemyLeftDistance > 0 && myBullet === undefined) {
-            setBulletCounter(this.bullets_array, myPosition.y, enemyLeftDistance);
+            setBulletCounter(bullets_array, myPosition.y, enemyLeftDistance);
             return Direction.SHOOT_LEFT;
         }
         else if (enemyRightDistance > 0 && myBullet === undefined) {
-            setBulletCounter(this.bullets_array, myPosition.y, enemyRightDistance);
+            setBulletCounter(bullets_array, myPosition.y, enemyRightDistance);
             return Direction.SHOOT_RIGHT;
         }
 

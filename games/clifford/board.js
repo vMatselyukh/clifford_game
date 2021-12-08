@@ -52,7 +52,7 @@ var CliffordBoard = module.exports = function(board){
 
     board.getOtherHeroes = function() {
         var result = [];
-        result = result.concat(board.findAll(Element.OTHER_HERO_DIE));
+        //result = result.concat(board.findAll(Element.OTHER_HERO_DIE));
         result = result.concat(board.findAll(Element.OTHER_HERO_LADDER));
         result = result.concat(board.findAll(Element.OTHER_HERO_LEFT));
         result = result.concat(board.findAll(Element.OTHER_HERO_RIGHT));
@@ -60,7 +60,7 @@ var CliffordBoard = module.exports = function(board){
         result = result.concat(board.findAll(Element.OTHER_HERO_PIPE));
         result = result.concat(board.findAll(Element.OTHER_HERO_PIT));
         // mask
-        result = result.concat(board.findAll(Element.OTHER_HERO_MASK_DIE));
+        //result = result.concat(board.findAll(Element.OTHER_HERO_MASK_DIE));
         result = result.concat(board.findAll(Element.OTHER_HERO_MASK_LADDER));
         result = result.concat(board.findAll(Element.OTHER_HERO_MASK_LEFT));
         result = result.concat(board.findAll(Element.OTHER_HERO_MASK_RIGHT));
@@ -72,7 +72,7 @@ var CliffordBoard = module.exports = function(board){
 
     board.getEnemyHeroes = function() {
         var result = [];
-        result = result.concat(board.findAll(Element.ENEMY_HERO_DIE));
+        //result = result.concat(board.findAll(Element.ENEMY_HERO_DIE));
         result = result.concat(board.findAll(Element.ENEMY_HERO_LADDER));
         result = result.concat(board.findAll(Element.ENEMY_HERO_LEFT));
         result = result.concat(board.findAll(Element.ENEMY_HERO_RIGHT));
@@ -80,7 +80,7 @@ var CliffordBoard = module.exports = function(board){
         result = result.concat(board.findAll(Element.ENEMY_HERO_PIPE));
         result = result.concat(board.findAll(Element.ENEMY_HERO_PIT));
         // mask
-        result = result.concat(board.findAll(Element.ENEMY_HERO_MASK_DIE));
+        //result = result.concat(board.findAll(Element.ENEMY_HERO_MASK_DIE));
         result = result.concat(board.findAll(Element.ENEMY_HERO_MASK_LADDER));
         result = result.concat(board.findAll(Element.ENEMY_HERO_MASK_LEFT));
         result = result.concat(board.findAll(Element.ENEMY_HERO_MASK_RIGHT));
@@ -115,6 +115,23 @@ var CliffordBoard = module.exports = function(board){
         result = result.concat(board.findAll(Element.OTHER_HERO_MASK_RIGHT));
         result = result.concat(board.findAll(Element.OTHER_HERO_MASK_PIPE));
         result = result.concat(board.findAll(Element.OTHER_HERO_MASK_PIT));
+    
+        return result;
+    }
+
+    board.getMortalEnemies = () => {
+        let result = [];
+        result = result.concat(board.findAll(Element.ENEMY_HERO_LADDER));
+        result = result.concat(board.findAll(Element.ENEMY_HERO_LEFT));
+        result = result.concat(board.findAll(Element.ENEMY_HERO_RIGHT));
+        result = result.concat(board.findAll(Element.ENEMY_HERO_PIPE));
+        result = result.concat(board.findAll(Element.ENEMY_HERO_PIT));
+    
+        result = result.concat(board.findAll(Element.OTHER_HERO_LADDER));
+        result = result.concat(board.findAll(Element.OTHER_HERO_LEFT));
+        result = result.concat(board.findAll(Element.OTHER_HERO_RIGHT));
+        result = result.concat(board.findAll(Element.OTHER_HERO_PIPE));
+        result = result.concat(board.findAll(Element.OTHER_HERO_PIT));
     
         return result;
     }
@@ -223,6 +240,15 @@ var CliffordBoard = module.exports = function(board){
         all = isPotionActive ? [] : all.concat(board.getRobbers());
         all = all.concat(board.getOtherHeroes());
         all = all.concat(board.getEnemyHeroes());
+        all = all.concat(board.getWalls());
+        all = all.concat(board.getBullets());
+        all = all.concat(board.getClosedDoors(keys));
+        return board.removeDuplicates(all);
+    };
+
+    board.getBarriersWithoutEnemies = function(isPotionActive = false, keys = []) {
+        var all = board.getWalls();
+        all = isPotionActive ? [] : all.concat(board.getRobbers());
         all = all.concat(board.getWalls());
         all = all.concat(board.getBullets());
         all = all.concat(board.getClosedDoors(keys));

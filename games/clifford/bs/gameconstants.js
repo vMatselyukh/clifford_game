@@ -12,10 +12,11 @@ class GameConstants{
 
     //constants
     static mask_potion_duration = 15;
+    static mask_potion_price = 0.5;
+    static portal_price = 0.8;
     static glow_clue_price = 1;
     static knife_clue_price = 2;
     static ring_clue_price = 5;
-
 }
 
 module.exports.GameConstants = GameConstants;

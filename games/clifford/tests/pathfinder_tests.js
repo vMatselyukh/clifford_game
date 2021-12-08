@@ -417,6 +417,7 @@ const testFindPathFromBlocked3 = () => {
     const shortestPath = getTheBestPath(board, heroPoint);
 
     assertEquals(",left,left,left,left,left,up,left,left,left,left,left,left,left,left,left,fallingdown,fallingdown,left,left,left",
+                 //",left,left,left,left,left,left,fallingdown,fallingdown,left,left,down,down,down,down,sleftdown,left,fallingdown,fallingdown"
          shortestPath.directions.toString());
 }
 
@@ -458,7 +459,7 @@ const testFindPathFromBlocked4 = () => {
 
     const shortestPath = getTheBestPath(board, heroPoint);
 
-    assertEquals(",left,left,left,left,left,up,up,left",
+    assertEquals(",right,down,down,fallingdown,fallingdown,down,fallingdown,srightdown,right,fallingdown,fallingdown,down,fallingdown,srightdown,right,fallingdown,fallingdown",
          shortestPath.directions.toString());
 }
 
@@ -542,7 +543,7 @@ const testFindPathFromBlocked6 = () => {
 
     const shortestPath = getTheBestPath(board, heroPoint);
 
-    assertEquals(",right,sleftdown,left,fallingdown,fallingdown,right",
+    assertEquals(",left,left,sleftdown,left,fallingdown,fallingdown,sleftdown,left,fallingdown,fallingdown,sleftdown,left,fallingdown,fallingdown,sleftdown,left,fallingdown,fallingdown,fallingdown,down,fallingdown,fallingdown,left,sleftdown,left,fallingdown,fallingdown,left,down",
          shortestPath.directions.toString());
 }
 
@@ -719,7 +720,7 @@ const testBug1 = () => {
 
     const shortestPath = getTheBestPath(board, heroPoint);
 
-    assertEquals(1, shortestPath.points.length);
+    assertEquals(6, shortestPath.points.length);
 }
 
 const testTheMostEfficientPath = () => {
@@ -766,36 +767,7 @@ const testTheMostEfficientPath = () => {
 
 
 
-// ☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼
-// ☼~~~~~~~~~~ &   &  &  ~~~~~~~☼
-// ☼HH & &   H##########H  $    ☼
-// ☼######H  H      &   H#☼☼☼☼☼#☼
-// ☼      H#####H#####H##  ~~~~~☼
-// ☼      H ~   H  && H  ~~&  & ☼
-// ☼#####H#     H   m H   &~~ $ ☼
-// ☼&   mH   H######H##   $& ~~»☼
-// ☼m    H~~~H      H   $@     #☼
-// ☼    $H      H#########H    &☼
-// ☼    H##     H#    $&&## W   ☼
-// ☼H###H######### H###H #####H#☼
-// ☼H@  H       @ @H# #H      H ☼
-// ☼H#######$  ###### ##########☼
-// ☼H      $       & &  $       ☼
-// ☼H#######~~~####H############☼
-// ☼H   &          H&   W       ☼
-// ☼##H~~~~    W ############H$ ☼
-// ☼  H                      H  ☼
-// ☼########~~~~~~~H######## H  ☼
-// ☼               H         H  ☼
-// ☼~~~~  ~~~#########~~~~~  H  ☼
-// ☼H                W   ~~~~H  ☼
-// ☼##☼☼☼☼☼☼# W ☼☼☼☼☼☼☼      H  ☼
-// ☼~~      ~~~     ►        H  ☼
-// ☼  H#####   ######y####   H @☼
-// ☼  H        ~~~~~~~~~~~~Y~H  ☼
-// ☼  H####H             )   H  ☼
-// ☼☼☼☼☼☼☼☼☼######☼☼☼☼☼☼☼#######☼
-// ☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼
+
 
 // ☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼
 // ☼~~~~~~~~~~        »  ~~~~~~~☼

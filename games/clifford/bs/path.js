@@ -21,12 +21,12 @@ class CliffordPath {
     }
 
     get pathWeight(){
-        return this.treasures.reduce((t1, t2) => {
+        return (this.treasures.reduce((t1, t2) => {
             let t1Points = t1 ? t1.pointsPrice : 0;
             let t2Points = t2 ? t2.pointsPrice : 0;
             
             return t1Points + t2Points;
-        }, 0)  / this.directionsLength; 
+        }, 0)  / this.directionsLength); 
     }
 }
 

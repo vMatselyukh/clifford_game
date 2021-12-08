@@ -7,6 +7,8 @@ const { assertEquals } = require("./basetests.js");
 module.exports = () => {
     testMovementManagerWorks();
     testMovementManagerWorks1();
+    testMovementManagerWorks2();
+    testMovementManagerWorks3();
 }
 
 const testMovementManagerWorks = () => {
@@ -53,33 +55,74 @@ const testMovementManagerWorks = () => {
 const testMovementManagerWorks1 = () => {
     let board = new Board(
         "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
-        "☼~~~~~~~~~~           ~~~~~~~☼" +
-        "☼HH  W    H##########H  &    ☼" +
-        "☼######H  H          H#☼☼☼☼☼#☼" +
-        "☼ $    H#####H#####H##$ ~~~~~☼" +
-        "☼      H ~   HW    H  ~~     ☼" +
-        "☼#####H#     H   $ H    ~~   ☼" +
-        "☼   & H   H######H##      ~~&☼" +
-        "☼     H~~~H      H &    $   #☼" +
-        "☼     H      H#########H     ☼" +
-        "☼    H##     H#$$     ##   $ ☼" +
+        "☼                          & ☼" +
+        "☼##H########################H☼" +
+        "☼  H     $ $   m   @     &  H☼" +
+        "☼H☼☼#☼☼H    H#########H     H☼" +
+        "☼H     H    H         H#####H☼" +
+        "☼H#☼#☼#H  & H W&      H  ~~~ ☼" +
+        "☼H  ~  H~~~~H~~~~~~@  H$)   ►☼" +
+        "☼H     H    H$    H###☼☼☼☼☼☼H☼" +
+        "☼H     H    H#####H        »H☼" +
+        "☼☼###☼##☼##☼H         H###H##☼" +
+        "☼☼###☼~~~~  H$        H & H##☼" +
+        "☼☼   ☼&    (H » ~~~~~~H  &H  ☼" +
+        "☼########H###☼☼☼☼     H &####☼" +
+        "☼        H m&   &     H      ☼" +
+        "☼H##########################H☼" +
+        "☼H          $     &~~~      H☼" +
+        "☼#######H#######        &   H☼" +
+        "☼       H~~~~~~~~~~   $    WH☼" +
+        "☼    W  H&   ##H   #######H##☼" +
+        "☼  @    H    ##H          H  ☼" +
+        "☼##H##### $  ########H#######☼" +
+        "☼  HW        & & $&  H       ☼" +
+        "☼#########H##########H&      ☼" +
+        "☼         H&      @  H   &   ☼" +
+        "☼☼☼     @ H~~~~~~~~~~H  m    ☼" +
+        "☼$  &H######         #######H☼" +
+        "☼H☼  H  »)                W H☼" +
+        "☼##########☼☼☼######☼☼######H☼" +
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+    );
+
+    const movementManager = new MovementManager(board);
+
+    const nextDirection = movementManager.getTheNextMove();
+
+    assertEquals(Direction.DOWN, nextDirection);
+}
+
+const testMovementManagerWorks2 = () => {
+    let board = new Board(
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+        "☼~~~~~~~~~~ &   &  &  ~~~~~~~☼" +
+        "☼HH & &   H##########H  $    ☼" +
+        "☼######H  H      &   H#☼☼☼☼☼#☼" +
+        "☼      H#####H#####H##  ~~~~~☼" +
+        "☼      H ~   H  && H  ~~&  & ☼" +
+        "☼#####H#     H   m H   &~~ $ ☼" +
+        "☼&   mH   H######H##   $& ~~»☼" +
+        "☼m    H~~~H      H   $@     #☼" +
+        "☼    $H      H#########H    &☼" +
+        "☼    H##     H#    $&&## W   ☼" +
         "☼H###H######### H###H #####H#☼" +
-        "☼H   H          H# #H      H ☼" +
-        "☼H#######   ###### ##########☼" +
-        "☼H         $ @             & ☼" +
+        "☼H@  H       @ @H# #H      H ☼" +
+        "☼H#######$  ###### ##########☼" +
+        "☼H      $       & &  $       ☼" +
         "☼H#######~~~####H############☼" +
-        "☼H              H        m   ☼" +
-        "☼##H~~~~      ############H  ☼" +
-        "☼  H           m   & &&&W H &☼" +
-        "☼########~~~~~~~H######## Hm$☼" +
-        "☼               H         H& ☼" +
-        "☼~~~~& ~~~#########~~~~~  H  ☼" +
-        "☼H$ «)               W~~~~H&&☼" +
-        "☼##☼☼☼☼☼☼# & ☼☼☼☼☼☼☼@ &  &H &☼" +
-        "☼~~      ~~~              H &☼" +
-        "☼  H#####   ########### & H@ ☼" +
-        "☼  H  ◄    x~~~~~~~~~~~~~~H@ ☼" +
-        "☼  H#y##H               W H@ ☼" +
+        "☼H   &          H&   W       ☼" +
+        "☼##H~~~~    W ############H$ ☼" +
+        "☼  H                      H  ☼" +
+        "☼########~~~~~~~H######## H  ☼" +
+        "☼               H         H  ☼" +
+        "☼~~~~  ~~~#########~~~~~  H  ☼" +
+        "☼H                W   ~~~~H  ☼" +
+        "☼##☼☼☼☼☼☼# W ☼☼☼☼☼☼☼      H  ☼" +
+        "☼~~      ~~~     ►        H  ☼" +
+        "☼  H#####   ######y####   H @☼" +
+        "☼  H        ~~~~~~~~~~~~Y~H  ☼" +
+        "☼  H####H             )   H  ☼" +
         "☼☼☼☼☼☼☼☼☼######☼☼☼☼☼☼☼#######☼" +
         "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
     );
@@ -88,6 +131,47 @@ const testMovementManagerWorks1 = () => {
 
     const nextDirection = movementManager.getTheNextMove();
 
-    //assertEquals(Direction.CRACK_RIGHT, nextDirection);
+    assertEquals(Direction.RIGHT, nextDirection);
+}
+
+const testMovementManagerWorks3 = () => {
+    let board = new Board(
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+        "☼~~~~~~~~~~ &   &  &  ~~~~~~~☼" +
+        "☼HH & &   H##########H  $    ☼" +
+        "☼######H  H      &   H#☼☼☼☼☼#☼" +
+        "☼      H#####H#####H##  ~~~~~☼" +
+        "☼      H ~   H  && H  ~~&  & ☼" +
+        "☼#####H#     H   m H   &~~ $ ☼" +
+        "☼&   mH   H######H##   $& ~~»☼" +
+        "☼m    H~~~H      H   $@     #☼" +
+        "☼    $H      H#########H    &☼" +
+        "☼    H##     H#    $&&## W   ☼" +
+        "☼H###H######### H###H #####H#☼" +
+        "☼H@  H       @ @H# #H      H ☼" +
+        "☼H#######$  ###### ##########☼" +
+        "☼H      $       & &  $       ☼" +
+        "☼H#######~~~####H############☼" +
+        "☼H   &          H&   W       ☼" +
+        "☼##H~~~~    W ############H$ ☼" +
+        "☼  H                      H  ☼" +
+        "☼########~~~~~~~H######## H  ☼" +
+        "☼               H         H  ☼" +
+        "☼~~~~  ~~~#########~~~~~  H  ☼" +
+        "☼H                W   ~~~~H  ☼" +
+        "☼##☼☼☼☼☼☼# W ☼☼☼☼☼☼☼      H  ☼" +
+        "☼~~      ~~~      ►       H  ☼" +
+        "☼  H#####   ######y####   H @☼" +
+        "☼  H        ~~~~~~~~~~~~Y~H  ☼" +
+        "☼  H####H             )   H  ☼" +
+        "☼☼☼☼☼☼☼☼☼######☼☼☼☼☼☼☼#######☼" +
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+    );
+
+    const movementManager = new MovementManager(board);
+
+    const nextDirection = movementManager.getTheNextMove();
+
+    assertEquals(Direction.CRACK_RIGHT, nextDirection);
 }
 
