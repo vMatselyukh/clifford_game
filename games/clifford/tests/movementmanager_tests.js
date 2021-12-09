@@ -1,20 +1,25 @@
-const { MovementManager } = require("../bs/movementmanager");
+const { MovementManager, clearBulletsArray } = require("../bs/movementmanager");
 var Games = require('./../../../engine/games.js');
 var Direction = Games.require('../direction.js');
 var Board = Games.require('../board.js');
 const { assertEquals } = require("./basetests.js");
 
 module.exports = () => {
-    testMovementManagerWorks();
-    testMovementManagerWorks1();
-    testMovementManagerWorks2();
-    testMovementManagerWorks3();
-    testMovementManagerWorks4();
-    testMovementManagerWorks5();
-    testMovementManagerWorks6();
-    testMovementManagerWorks7();
-    testMovementManagerWorks8();
-    testMovementManagerWorks9();
+    // testMovementManagerWorks();
+    // testMovementManagerWorks1();
+    // testMovementManagerWorks2();
+    // testMovementManagerWorks3();
+    // testMovementManagerWorks4();
+    // testMovementManagerWorks5();
+    // testMovementManagerWorks6();
+    // testMovementManagerWorks7();
+    // testMovementManagerWorks8();
+    // testMovementManagerWorks9();
+    //testMovementManagerWorks10();
+    testMovementManagerWorks11();
+    testMovementManagerWorks12();
+    testMovementManagerWorks13();
+    testMovementManagerWorks14();
 }
 
 const testMovementManagerWorks = () => {
@@ -426,4 +431,232 @@ const testMovementManagerWorks9 = () => {
 
     assertEquals(Direction.RIGHT, nextDirection);
 }
+
+const testMovementManagerWorks10 = () => {
+    let board = new Board(
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+        "☼~~~~~~~~~~           ~~~~~~~☼" +
+        "☼HH&    m H##########H      @☼" +
+        "☼######H  H        & H#☼☼☼☼☼#☼" +
+        "☼    $$H#####H#####H##  ~~~~~☼" +
+        "☼ W$&  H ~ & H  $$ H  ~~     ☼" +
+        "☼#####H#     H     H $  ~~ @ ☼" +
+        "☼     H  &H######H##    & ~~»☼" +
+        "☼W    H~~~H      Hm         #☼" +
+        "☼     H &    H#########H     ☼" +
+        "☼   @H##&    H#    &  ##&    ☼" +
+        "☼H###H######### H###H #####H#☼" +
+        "☼H   H  $       H# #H   &  H ☼" +
+        "☼H####### $ ######@##########☼" +
+        "☼H @         &         m     ☼" +
+        "☼H#######~~~####H############☼" +
+        "☼H      &       H &W&       &☼" +
+        "☼##H~~~~      ########Hy##H  ☼" +
+        "☼  H         &        H@  H  ☼" +
+        "☼########~~~~~~~H#####H&  H  ☼" +
+        "☼             $(H         H  ☼" +
+        "☼~~~~  ~~~#########~~~~~  H  ☼" +
+        "☼H                    ~~~~H  ☼" +
+        "☼##☼☼☼☼☼☼#  &☼☼☼☼☼☼☼      H  ☼" +
+        "☼~~      ~~Y          & $ H  ☼" +
+        "☼  H#####   ###########   H  ☼" +
+        "☼ WH      & ~~~~~~~~~~~~~~H  ☼" +
+        "☼W H####H            @◄   H  ☼" +
+        "☼☼☼☼☼☼☼☼☼######☼☼☼☼☼☼☼#######☼" +
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+    );
+
+    const movementManager = new MovementManager(board);
+
+    const nextDirection = movementManager.getTheNextMove();
+
+    assertEquals(Direction.LEFT, nextDirection);
+}
+
+const testMovementManagerWorks11 = () => {
+    let board = new Board(
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+        "☼H        &   ~~H~~~~☼☼☼☼☼☼☼H☼" +
+        "☼H~~~~  ######  H $       H☼H☼" +
+        "☼H&   & $      $##H#######H☼H☼" +
+        "☼H#########       H  &$~~~H☼H☼" +
+        "☼H &      ###X####H##Hm    ☼H☼" +
+        "☼H           H      #######☼H☼" +
+        "☼~~~~~~~~~~~~H       H~~~~~☼H☼" +
+        "☼  &  H          ►»  H W   ☼H☼" +
+        "☼ ### #############H H#####☼H☼" +
+        "☼H                 H    &  ☼H☼" +
+        "☼H#####         H##H####    H☼" +
+        "☼H  $   H######### H   ######☼" +
+        "☼H##  & H          H~~~~~~   ☼" +
+        "☼~~~~#####H#  $~~~~H  $&     ☼" +
+        "☼W @      H      &@H &   )~~~☼" +
+        "☼   ########H    ######H##   ☼" +
+        "☼           H          H     ☼" +
+        "☼H    ###########H   m H#####☼" +
+        "☼H###      @  »  H$&   H&    ☼" +
+        "☼H &######  ##H###### &H     ☼" +
+        "☼H     & m    H ~~~~~##H###H ☼" +
+        "☼   »H########H# $     H   ##☼" +
+        "☼@###H        H   &    &~~~~~☼" +
+        "☼    H########H#########     ☼" +
+        "☼H   H   W    &        W     ☼" +
+        "☼H$ ####H######       W #####☼" +
+        "☼H&     H @    H#######H     ☼" +
+        "☼##############H«  )   H#####☼" +
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+    );
+
+    clearBulletsArray();
+    const movementManager = new MovementManager(board);
+
+    let nextDirection = movementManager.getTheNextMove();
+    assertEquals(Direction.SHOOT_RIGHT, nextDirection);
+    nextDirection = movementManager.getTheNextMove();
+
+    assertEquals(Direction.LEFT, nextDirection);
+}
+
+const testMovementManagerWorks12 = () => {
+    let board = new Board(
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+        "☼H        &   ~~H~~~~☼☼☼☼☼☼☼H☼" +
+        "☼H~~~~  ######  H $       H☼H☼" +
+        "☼H&   & $      $##H#######H☼H☼" +
+        "☼H#########       H  &$~~~H☼H☼" +
+        "☼H &      ###X####H##Hm    ☼H☼" +
+        "☼H           H      #######☼H☼" +
+        "☼~~~~~~~~~~~~H       H~~~~~☼H☼" +
+        "☼  &  H     ► ##  »  H W   ☼H☼" +
+        "☼ ### #############H H#####☼H☼" +
+        "☼H                 H    &  ☼H☼" +
+        "☼H#####         H##H####    H☼" +
+        "☼H  $   H######### H   ######☼" +
+        "☼H##  & H          H~~~~~~   ☼" +
+        "☼~~~~#####H#  $~~~~H  $&     ☼" +
+        "☼W @      H      &@H &   )~~~☼" +
+        "☼   ########H    ######H##   ☼" +
+        "☼           H          H     ☼" +
+        "☼H    ###########H   m H#####☼" +
+        "☼H###      @  »  H$&   H&    ☼" +
+        "☼H &######  ##H###### &H     ☼" +
+        "☼H     & m    H ~~~~~##H###H ☼" +
+        "☼   »H########H# $     H   ##☼" +
+        "☼@###H        H   &    &~~~~~☼" +
+        "☼    H########H#########     ☼" +
+        "☼H   H   W    &        W     ☼" +
+        "☼H$ ####H######       W #####☼" +
+        "☼H&     H @    H#######H     ☼" +
+        "☼##############H«  )   H#####☼" +
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+    );
+
+    clearBulletsArray();
+
+    const movementManager = new MovementManager(board);
+
+    let nextDirection = movementManager.getTheNextMove();
+    assertEquals(Direction.SHOOT_RIGHT, nextDirection);
+    nextDirection = movementManager.getTheNextMove();
+    assertEquals(Direction.SHOOT_RIGHT, nextDirection);
+    nextDirection = movementManager.getTheNextMove();
+    assertEquals(Direction.SHOOT_RIGHT, nextDirection);
+
+    nextDirection = movementManager.getTheNextMove();
+
+    assertEquals(Direction.LEFT, nextDirection);
+}
+
+const testMovementManagerWorks13 = () => {
+    let board = new Board(
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+        "☼H        &   ~~H~~~~☼☼☼☼☼☼☼H☼" +
+        "☼H~~~~  ######  H $       H☼H☼" +
+        "☼H&   & $      $##H#######H☼H☼" +
+        "☼H#########       H  &$~~~H☼H☼" +
+        "☼H &      ###X####H##Hm    ☼H☼" +
+        "☼H           H      #######☼H☼" +
+        "☼~~~~~~~~~~~~H       H~~~~~☼H☼" +
+        "☼  &  H       ##   » H W   ☼H☼" +
+        "☼ ### #############H H#####☼H☼" +
+        "☼H                 H    &  ☼H☼" +
+        "☼H#####         H##H####    H☼" +
+        "☼H  $   H######### H   ######☼" +
+        "☼H##  & H          A~~~~~~   ☼" +
+        "☼~~~~#####H#  $~~~~H  $&     ☼" +
+        "☼W @      H      &@H &   )~~~☼" +
+        "☼   ########H    ######H##   ☼" +
+        "☼           H          H     ☼" +
+        "☼H    ###########H   m H#####☼" +
+        "☼H###      @  »  H$&   H&    ☼" +
+        "☼H &######  ##H###### &H     ☼" +
+        "☼H     & m    H ~~~~~##H###H ☼" +
+        "☼   »H########H# $     H   ##☼" +
+        "☼@###H        H   &    &~~~~~☼" +
+        "☼    H########H#########     ☼" +
+        "☼H   H   W    &        W     ☼" +
+        "☼H$ ####H######       W #####☼" +
+        "☼H&     H @    H#######H     ☼" +
+        "☼##############H«  )   H#####☼" +
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+    );
+
+    clearBulletsArray();
+
+    const movementManager = new MovementManager(board);
+
+    let nextDirection = movementManager.getTheNextMove();
+    assertEquals(Direction.SHOOT_UP, nextDirection);
+    nextDirection = movementManager.getTheNextMove();
+    assertEquals(Direction.LEFT, nextDirection);
+}
+
+const testMovementManagerWorks14 = () => {
+    let board = new Board(
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+        "☼H        &   ~~H~~~~☼☼☼☼☼☼☼H☼" +
+        "☼H~~~~  ######  H $       H☼H☼" +
+        "☼H&   & $      $##H#######H☼H☼" +
+        "☼H#########       H  &$~~~H☼H☼" +
+        "☼H &      ###X####H##Hm    ☼H☼" +
+        "☼H           H      #######☼H☼" +
+        "☼~~~~~~~~~~~~H       H~~~~~☼H☼" +
+        "☼  &  H       ##     H W   ☼H☼" +
+        "☼ ### #############H H#####☼H☼" +
+        "☼H                 H    &  ☼H☼" +
+        "☼H#####         H##H####    H☼" +
+        "☼H  $   H######### H   ######☼" +
+        "☼H##  & H          A~~~~~~   ☼" +
+        "☼~~~~#####H#  $~~~~H  $&     ☼" +
+        "☼W @      H      &@# &   )~~~☼" +
+        "☼   ########H    ##N###H##   ☼" +
+        "☼           H          H     ☼" +
+        "☼H    ###########H   m H#####☼" +
+        "☼H###      @  »  H$&   H&    ☼" +
+        "☼H &######  ##H###### &H     ☼" +
+        "☼H     & m    H ~~~~~##H###H ☼" +
+        "☼   »H########H# $     H   ##☼" +
+        "☼@###H        H   &    &~~~~~☼" +
+        "☼    H########H#########     ☼" +
+        "☼H   H   W    &        W     ☼" +
+        "☼H$ ####H######       W #####☼" +
+        "☼H&     H @    H#######H     ☼" +
+        "☼##############H«  )   H#####☼" +
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+    );
+
+    clearBulletsArray();
+
+    const movementManager = new MovementManager(board);
+
+    let nextDirection = movementManager.getTheNextMove();
+    assertEquals(Direction.SHOOT_DOWN, nextDirection);
+    nextDirection = movementManager.getTheNextMove();
+    assertEquals(Direction.SHOOT_DOWN, nextDirection);
+
+    nextDirection = movementManager.getTheNextMove();
+    assertEquals(Direction.LEFT, nextDirection);
+}
+
+
 

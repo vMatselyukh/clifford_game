@@ -50,6 +50,13 @@ var CliffordBoard = module.exports = function(board){
         return result[0];
     }
 
+    board.hasHeroDied = () => {
+        var result = [];
+        result = result.concat(board.findAll(Element.HERO_DIE));
+        result = result.concat(board.findAll(Element.HERO_MASK_DIE));
+        return result[0];
+    }
+
     board.getOtherHeroes = function() {
         var result = [];
         //result = result.concat(board.findAll(Element.OTHER_HERO_DIE));
@@ -169,6 +176,18 @@ var CliffordBoard = module.exports = function(board){
     board.getWalls = function() {
         var result = [];
         result = result.concat(board.findAll(Element.BRICK));
+        result = result.concat(board.findAll(Element.STONE));
+        return result;
+    }
+
+    board.getRuinableWalls = function() {
+        var result = [];
+        result = result.concat(board.findAll(Element.BRICK));
+        return result;
+    }
+
+    board.getNonRuinableWalls = function() {
+        var result = [];
         result = result.concat(board.findAll(Element.STONE));
         return result;
     }

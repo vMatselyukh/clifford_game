@@ -14,9 +14,29 @@ class GameConstants{
     static mask_potion_duration = 15;
     static mask_potion_price = 0.5;
     static portal_price = 0.2;
-    static glow_clue_price = 1;
-    static knife_clue_price = 2;
-    static ring_clue_price = 5;
+    
+    static get glow_clue_price()
+    {
+        return this.increment_for_glow_clue_price + this.default_glow_clue_price;
+    }
+
+    static get knife_clue_price()
+    {
+        return this.increment_for_knife_clue_price + this.default_knife_clue_price;
+    }
+
+    static get ring_clue_price()
+    {
+        return this.increment_for_ring_clue_price + this.default_ring_clue_price;
+    }
+
+    static default_glow_clue_price = 3;
+    static default_knife_clue_price = 4;
+    static default_ring_clue_price = 5;
+
+    static increment_for_glow_clue_price = 0;
+    static increment_for_knife_clue_price = 0;
+    static increment_for_ring_clue_price = 0;
 }
 
 module.exports.GameConstants = GameConstants;

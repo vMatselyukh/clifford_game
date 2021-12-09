@@ -38,6 +38,9 @@ var CliffordDirection = module.exports = function() {
     Direction.OPEN_DOOR_RIGHT  = Direction._init(11, 0,  0, 'ACT(2),RIGHT'); // open door on right
     Direction.CLOSE_DOOR_LEFT  = Direction._init(12, 0,  0, 'ACT(3),LEFT');  // close door on left
     Direction.CLOSE_DOOR_RIGHT = Direction._init(13, 0,  0, 'ACT(3),RIGHT'); // close door on right
+    Direction.SHOOT_UP = Direction._init(14, 0,  -1, 'ACT(1),UP'); // shoot up on ladder
+    Direction.SHOOT_DOWN = Direction._init(15, 0,  1, 'ACT(1),DOWN'); // shoot down on ladder
+    Direction.SHOOT_WHEN_FALLING = Direction._init(16, 0,  0, 'ACT'); // shoot down on ladder
 
     return Direction;
 }

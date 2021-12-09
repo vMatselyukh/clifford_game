@@ -1,38 +1,91 @@
 const Element = require("../elements.js");
 const Direction = require("../direction.js");
+const { Shot } = require("./shot"); 
 const Point = require("./../../../engine/point.js");
 
 const crack_left = "sleftdown";
 const crack_right = "srightdown";
 
-const getEnemyLeftDistance = (board, myPosition) => {
-    const walls = board.getWalls();
-    const enemies = board.getEnemies();
-
+const getEnemyLeftShot = (board, myPosition, walls, bricks, enemies) => {
     let x = myPosition.x;
+    let bricksToEnemyCount = 0;
     while (!board.contains(walls, new Point(x, myPosition.y))) {
         x--;
+        if(board.contains(bricks, new Point(x, myPosition.y)))
+        {
+            bricksToEnemyCount ++;
+        }
+
         if (board.contains(enemies, new Point(x, myPosition.y))) {
-            return Math.abs(myPosition.x - x);
+            return new Shot(Math.abs(myPosition.x - x), bricksToEnemyCount + 1);
         }
     }
 
-    return 0;
+    return null;
 }
 
-const getEnemyRightDistance = (board, myPosition) => {
-    const walls = board.getWalls();
-    const enemies = board.getEnemies();
-
+const getEnemyRightShot = (board, myPosition, walls, bricks, enemies) => {
     let x = myPosition.x;
+    let bricksToEnemyCount = 0;
     while (!board.contains(walls, new Point(x, myPosition.y))) {
         x++;
+        if(board.contains(bricks, new Point(x, myPosition.y)))
+        {
+            bricksToEnemyCount ++;
+        }
+
         if (board.contains(enemies, new Point(x, myPosition.y))) {
-            return Math.abs(myPosition.x - x);
+            return new Shot(Math.abs(myPosition.x - x), bricksToEnemyCount + 1);
         }
     }
 
-    return 0;
+    return null;
+}
+
+const getEnemyUpShot = (board, myPosition, walls, bricks, enemies) => {
+    if(!board.isAt(myPosition.x, myPosition.y, Element.HERO_LADDER))
+    {
+        return null;
+    }
+
+    let y = myPosition.y;
+    let bricksToEnemyCount = 0;
+    while (!board.contains(walls, new Point(myPosition.x, y))) {
+        y++;
+        if(board.contains(bricks, new Point(myPosition.x, y)))
+        {
+            bricksToEnemyCount ++;
+        }
+
+        if (board.contains(enemies, new Point(myPosition.x, y))) {
+            return new Shot(Math.abs(myPosition.y - y), bricksToEnemyCount + 1);
+        }
+    }
+
+    return null;
+}
+
+const getEnemyDownShot = (board, myPosition, walls, bricks, enemies) => {
+    if(!board.isAt(myPosition.x, myPosition.y, Element.HERO_LADDER))
+    {
+        return null;
+    }
+
+    let y = myPosition.y;
+    let bricksToEnemyCount = 0;
+    while (!board.contains(walls, new Point(myPosition.x, y))) {
+        y--;
+        if(board.contains(bricks, new Point(myPosition.x, y)))
+        {
+            bricksToEnemyCount ++;
+        }
+
+        if (board.contains(enemies, new Point(myPosition.x, y))) {
+            return new Shot(Math.abs(myPosition.y - y), bricksToEnemyCount + 1);
+        }
+    }
+
+    return null;
 }
 
 const decreaseBulletCounter = (bullet_array) => {
@@ -43,17 +96,22 @@ const decreaseBulletCounter = (bullet_array) => {
     }
 }
 
-const setBulletCounter = (bullet_array, y, distance) => {
-    const counter = distance / 1;
-    if (counter < 1) {
-        counter = 2;
+const setBulletCounter = (bullet_array, coordinate, shot, shotIndex) => {
+    const counter = shot.distance + shot.bulletsNumber;
+    let counterToSet = 0;
+    if(shot.bulletsNumber == shotIndex)
+    {
+        counterToSet = counter;
     }
-    if (!bullet_array.find(bullet => bullet.y === y)) {
-        bullet_array.push({ y: y, counter: counter });
+
+    if (!bullet_array.find(bullet => bullet.coordinate === coordinate)) {
+        bullet_array.push({ coordinate: coordinate, counter: counterToSet, shotsTotalCount: shot.bulletsNumber, shotsCount: shotIndex });
     } else {
         for (let i = 0; i < bullet_array.length; i++) {
-            if (bullet_array[i].y === y) {
-                bullet_array[i].counter = counter;
+            if (bullet_array[i].coordinate === coordinate) {
+                bullet_array[i].counter = counterToSet;
+                bullet_array[i].shotsCount = shotIndex;
+                bullet_array[i].shotsTotalCount = shot.bulletsNumber;
                 break;
             }
         }
@@ -121,4 +179,4 @@ const digHoleIfNeeded = (board, myPosition, robbers_cached) => {
     return null;
 }
 
-module.exports = { getEnemyLeftDistance, getEnemyRightDistance, decreaseBulletCounter, setBulletCounter, digHoleIfNeeded };
+module.exports = { getEnemyLeftShot, getEnemyRightShot, getEnemyUpShot, getEnemyDownShot, decreaseBulletCounter, setBulletCounter, digHoleIfNeeded };
