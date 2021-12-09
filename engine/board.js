@@ -74,7 +74,6 @@ var Board = module.exports = function(board) {
     // TODO test me
     var isAtMany = function(x, y, elements) {
         if (new Point(x, y).isOutOf(size)) {
-            debug;
             return false;
         }
         var element = getAt(x, y);

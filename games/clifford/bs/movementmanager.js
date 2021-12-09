@@ -2,7 +2,7 @@ const Games = require('./../../../engine/games.js');
 const Point = require('./../../../engine/point.js');
 const Direction = Games.require('./../direction.js');
 const Element = Games.require('./../elements.js');
-const { getTheBestPath } = require("./pathfinder");
+const { getTheBestPath, getRandomMovement } = require("./pathfinder");
 const { getEnemyLeftDistance, getEnemyRightDistance,
   decreaseBulletCounter, setBulletCounter,
   digHoleIfNeeded } = require("./enemydefender");
@@ -71,7 +71,8 @@ class MovementManager {
 
         let neededPath = getTheBestPath(this.board, myPosition, this.potion_taken);
         if (!neededPath) {
-            return Direction.STOP;
+            let randomMovement = this.convertCustomToGameDirection(getRandomMovement(this.board, myPosition));
+            return randomMovement;
         }
 
         let stringDirection = neededPath.directions[1];

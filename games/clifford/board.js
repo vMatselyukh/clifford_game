@@ -146,6 +146,12 @@ var CliffordBoard = module.exports = function(board){
         return result;
     }
 
+    board.getRobbersInPit = () => {
+        var result = [];
+        result = result.concat(board.findAll(Element.ROBBER_PIT));
+        return result;
+    }
+
     board.getClues = function() {
         var result = [];
         result = result.concat(board.findAll(Element.CLUE_KNIFE));

@@ -45,9 +45,9 @@ const decreaseBulletCounter = (bullet_array) => {
 
 const setBulletCounter = (bullet_array, y, distance) => {
     const counter = distance / 1;
-    if(counter === 0){
-        counter = 1;
-    }    
+    if (counter < 1) {
+        counter = 2;
+    }
     if (!bullet_array.find(bullet => bullet.y === y)) {
         bullet_array.push({ y: y, counter: counter });
     } else {
@@ -61,7 +61,15 @@ const setBulletCounter = (bullet_array, y, distance) => {
 }
 
 const isBotRight = (board, myPosition, robbers_cached) => {
-    if (board.contains(robbers_cached, new Point(myPosition.x + 2, myPosition.y))
+    if ((
+        (board.contains(robbers_cached, new Point(myPosition.x + 2, myPosition.y))
+            && board.isAt(myPosition.x + 1, myPosition.y - 1, Element.BRICK)
+            && !board.isAt(myPosition.x + 1, myPosition.y, Element.ROBBER_FALL))
+        ||
+        (board.contains(robbers_cached, new Point(myPosition.x + 3, myPosition.y))
+            && board.isAt(myPosition.x + 2, myPosition.y - 1, Element.BRICK)
+            && !board.isAt(myPosition.x + 1, myPosition.y, Element.ROBBER_FALL))
+    )
         && !board.isAt(myPosition.x + 2, myPosition.y, Element.ROBBER_FALL)) {
         return true;
     }
@@ -70,7 +78,14 @@ const isBotRight = (board, myPosition, robbers_cached) => {
 }
 
 const isBotLeft = (board, myPosition, robbers_cached) => {
-    if (board.contains(robbers_cached, new Point(myPosition.x - 2, myPosition.y))
+    if ((
+        (board.contains(robbers_cached, new Point(myPosition.x - 2, myPosition.y))
+            && !board.isAt(myPosition.x - 1, myPosition.y, Element.ROBBER_FALL)
+            && board.isAt(myPosition.x - 1, myPosition.y - 1, Element.BRICK))
+        || (board.contains(robbers_cached, new Point(myPosition.x - 3, myPosition.y))
+            && board.isAt(myPosition.x - 2, myPosition.y - 1, Element.BRICK)
+            && !board.isAt(myPosition.x - 2, myPosition.y, Element.ROBBER_FALL))
+    )
         && !board.isAt(myPosition.x - 2, myPosition.y, Element.ROBBER_FALL)) {
         return true;
     }
@@ -78,14 +93,28 @@ const isBotLeft = (board, myPosition, robbers_cached) => {
     return false;
 }
 
+const pitNearExists = (board, myPosition, directionToCheck) => {
+    const pitsArray = [Element.PIT_FILL_1, Element.PIT_FILL_2, Element.PIT_FILL_3, Element.PIT_FILL_4];
+
+    if (directionToCheck == Direction.LEFT) {
+        return board.isAtMany(myPosition.x - 1, myPosition.y - 1, pitsArray)
+            || board.isAtMany(myPosition.x - 2, myPosition.y - 1, pitsArray);
+    }
+
+    if (directionToCheck == Direction.RIGHT) {
+        return board.isAtMany(myPosition.x + 1, myPosition.y - 1, pitsArray)
+            || board.isAtMany(myPosition.x + 2, myPosition.y - 1, pitsArray);
+    }
+
+    return false;
+}
+
 const digHoleIfNeeded = (board, myPosition, robbers_cached) => {
-    if (isBotLeft(board, myPosition, robbers_cached)
-        && board.isAt(myPosition.x - 1, myPosition.y - 1, Element.BRICK)) {
+    if (isBotLeft(board, myPosition, robbers_cached) && !pitNearExists(board, myPosition, Direction.LEFT)) {
         return crack_left;
     }
 
-    if (isBotRight(board, myPosition, robbers_cached)
-        && board.isAt(myPosition.x + 1, myPosition.y - 1, Element.BRICK)) {
+    if (isBotRight(board, myPosition, robbers_cached) && !pitNearExists(board, myPosition, Direction.RIGHT)) {
         return crack_right;
     }
 

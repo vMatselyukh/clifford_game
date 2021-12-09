@@ -32,6 +32,7 @@ const PathFinderTests = () => {
     testSetBulletCounter();
     testBug1();
     testTheMostEfficientPath();
+    testTheCircularPath();
 }
 
 const testGetTreasuresOnBoard = () => {
@@ -330,9 +331,12 @@ const testFindPathFromBlocked1 = () => {
 
     const heroPoint = board.getHero();
 
+    // for(let i = 0; i < 40;i++){
+    //     const shortestPath1 = getTheBestPath(board, heroPoint);    
+    // }
     const shortestPath = getTheBestPath(board, heroPoint);
 
-    assertEquals(",srightdown,right,fallingdown,fallingdown,down,sleftdown,left,fallingdown,fallingdown,sleftdown,left,fallingdown,fallingdown",
+    assertEquals(",left,up,left,left,left,up,up,left,left,up,left,left,left,left,left,left,left",
          shortestPath.directions.toString());
 }
 
@@ -374,7 +378,7 @@ const testFindPathFromBlocked2 = () => {
 
     const shortestPath = getTheBestPath(board, heroPoint);
 
-    assertEquals(",srightdown,right,fallingdown,fallingdown,down,sleftdown,left,fallingdown,fallingdown,sleftdown,left,fallingdown,fallingdown",
+    assertEquals(",left,up,left,left,left,up,up,left,left,up,left,left,left,left,left,left,left",
          shortestPath.directions.toString());
 }
 
@@ -416,8 +420,7 @@ const testFindPathFromBlocked3 = () => {
 
     const shortestPath = getTheBestPath(board, heroPoint);
 
-    assertEquals(",left,left,left,left,left,up,left,left,left,left,left,left,left,left,left,fallingdown,fallingdown,left,left,left",
-                 //",left,left,left,left,left,left,fallingdown,fallingdown,left,left,down,down,down,down,sleftdown,left,fallingdown,fallingdown"
+    assertEquals(",left,left,left,left,left,up,left,left,left,left,left,left,left,left,left,fallingdown,fallingdown,left,left,left,left,left",
          shortestPath.directions.toString());
 }
 
@@ -459,7 +462,7 @@ const testFindPathFromBlocked4 = () => {
 
     const shortestPath = getTheBestPath(board, heroPoint);
 
-    assertEquals(",right,down,down,fallingdown,fallingdown,down,fallingdown,srightdown,right,fallingdown,fallingdown,down,fallingdown,srightdown,right,fallingdown,fallingdown",
+    assertEquals(",left,left,left,sleftdown,left,fallingdown,fallingdown,fallingdown,fallingdown,left,left,sleftdown,left,fallingdown,fallingdown",
          shortestPath.directions.toString());
 }
 
@@ -543,7 +546,7 @@ const testFindPathFromBlocked6 = () => {
 
     const shortestPath = getTheBestPath(board, heroPoint);
 
-    assertEquals(",left,left,sleftdown,left,fallingdown,fallingdown,sleftdown,left,fallingdown,fallingdown,sleftdown,left,fallingdown,fallingdown,sleftdown,left,fallingdown,fallingdown,fallingdown,down,fallingdown,fallingdown,left,sleftdown,left,fallingdown,fallingdown,left,down",
+    assertEquals(",left,left,sleftdown,left,fallingdown,fallingdown,sleftdown,left,fallingdown,fallingdown,sleftdown,left,fallingdown,fallingdown,sleftdown,left,fallingdown,fallingdown,fallingdown,down,fallingdown,fallingdown,left,left,left,sleftdown,left,fallingdown,fallingdown,down",
          shortestPath.directions.toString());
 }
 
@@ -720,7 +723,7 @@ const testBug1 = () => {
 
     const shortestPath = getTheBestPath(board, heroPoint);
 
-    assertEquals(6, shortestPath.points.length);
+    assertEquals(10, shortestPath.points.length);
 }
 
 const testTheMostEfficientPath = () => {
@@ -761,11 +764,51 @@ const testTheMostEfficientPath = () => {
 
     const shortestPath = getTheBestPath(board, heroPoint);
 
-    assertEquals(",left,left,left,left,left",
+    assertEquals(",left,left,left,left,left,left,left,left,left",
          shortestPath.directions.toString());
 }
 
+const testTheCircularPath = () => {
+    // let board = new Board(
+    //     "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+    //     "☼~~~~~~~~~~ $ W  $&   ~~~~~~~☼" +
+    //     "☼HH W m   H##########H  $    ☼" +
+    //     "☼######H  H      &WC H#☼☼☼☼☼#☼" +
+    //     "☼x     H#####H#####H##  ~~~~~☼" +
+    //     "☼     &H ~   H     HC ~~  &  ☼" +
+    //     "☼#####H#     H    @H    ~~   ☼" +
+    //     "☼    &H   H######H##      ~~ ☼" +
+    //     "☼     H~~~H      H          #☼" +
+    //     "☼     H      H#########H     ☼" +
+    //     "☼    H## $   H#       ##     ☼" +
+    //     "☼H###H######### H###H #####H#☼" +
+    //     "☼H   H          H# #H     @H ☼" +
+    //     "☼H#######  C###### ##########☼" +
+    //     "☼H     )&       &$       &   ☼" +
+    //     "☼H#######~~~####H############☼" +
+    //     "☼H              H        &&  ☼" +
+    //     "☼##H~~~~     C############H  ☼" +
+    //     "☼  H             @    &$ $H  ☼" +
+    //     "☼########~~~~~~~H######## H@ ☼" +
+    //     "☼              &H &       H  ☼" +
+    //     "☼~~~~  ~~~#########~~~~~  H &☼" +
+    //     "☼H         x &     W  ~~~~H  ☼" +
+    //     "☼##☼☼☼☼☼☼#   ☼☼☼☼☼☼☼     $H m☼" +
+    //     "☼~~m    &~~~             &H& ☼" +
+    //     "☼  H#####$O ###########   H  ☼" +
+    //     "☼ $H @     &~~~~~~~~~~~~~~H  ☼" +
+    //     "☼  H####H            W    H& ☼" +
+    //     "☼☼☼☼☼☼☼☼☼######☼☼☼☼☼☼☼#######☼" +
+    //     "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+    // );
 
+    // const heroPoint = board.getHero();
+
+    // const shortestPath = getTheBestPath(board, heroPoint);
+
+    // assertEquals(",left,left,left,left,left",
+    //      shortestPath.directions.toString());
+}
 
 
 

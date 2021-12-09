@@ -27,7 +27,8 @@ const getTreasuresOnBoard = (board) => {
 
 const cacheThings = (board, isPotionActive, keys) => {
     barriers_cached = board.getBarriers(isPotionActive, keys);
-    ground_cached = [...board.getWalls(), ...board.getLadders(), ...board.getOtherHeroes(), ...board.getEnemyHeroes(), ...board.getRobbers()];
+    ground_cached = [...board.getWalls(), ...board.getLadders(), ...board.getOtherHeroes(), 
+        ...board.getEnemyHeroes(), ...board.getRobbers(), ...board.getRobbersInPit()];
     ladders_cached = board.getLadders();
     shootable_barriers_cached = board.findAll(Element.BRICK);
     pipes_cached = board.getPipes();
@@ -93,10 +94,16 @@ const findPathsFromPoint = (board, myPosition) => {
     return findAllPaths(board, allPaths);
 }
 
-const isCharacterOnGround = (board, path, myPosition, ground_cached_local, pipes_cached_local) => {
+const isCharacterOnGroundOrPipeOrLadder = (board, path, myPosition, ground_cached_local, pipes_cached_local) => {
     return (board.isGroundAtCached(myPosition.x, myPosition.y - 1, ground_cached_local)
         && !board.contains(path.removedBarriers, new Point(myPosition.x, myPosition.y - 1))
-        || board.isPipeAtCached(myPosition.x, myPosition.y, pipes_cached_local));
+        || board.isPipeAtCached(myPosition.x, myPosition.y, pipes_cached_local)
+        || board.isAt(myPosition.x, myPosition.y, Element.HERO_LADDER));
+}
+
+const isCharacterOnGround = (board, path, myPosition, ground_cached_local) => {
+    return (board.isGroundAtCached(myPosition.x, myPosition.y - 1, ground_cached_local)
+        && !board.contains(path.removedBarriers, new Point(myPosition.x, myPosition.y - 1)));
 }
 
 const addNextPointIfPossible = (board, position, direction, allPaths, index, checkForSafety) => {
@@ -119,7 +126,7 @@ const addNextPointIfPossible = (board, position, direction, allPaths, index, che
 
         const nextPoint = new Point(position.x + x, position.y + y);
 
-        if(checkForSafety && !isTheNextPointSafe(board, nextPoint)){
+        if(checkForSafety && !isTheNextPointSafe(board, nextPoint, direction)){
              return;
         }
 
@@ -181,14 +188,29 @@ const getTreasureIfFound = (board, point) => {
     return null;
 }
 
-const isTheNextPointSafe = (board, nextPoint) => {
-    if (board.contains(robbers_cached, new Point(nextPoint.x + 1, nextPoint.y + 1)) 
-        || board.contains(robbers_cached, new Point(nextPoint.x, nextPoint.y + 1))
+const isTheNextPointSafe = (board, nextPoint, direction) => {
+    if (
+        board.isAt(nextPoint.x, nextPoint.y, Element.ROBBER_PIT)
+        || board.contains(robbers_cached, new Point(nextPoint.x + 1, nextPoint.y + 1)) 
+            && (direction == GameConstants.right_direction || direction == GameConstants.shoot_right_down_direction)  //up right
+        || board.contains(robbers_cached, new Point(nextPoint.x, nextPoint.y + 1)) && direction != GameConstants.down_direction //up
         || board.contains(robbers_cached, new Point(nextPoint.x - 1, nextPoint.y + 1)) 
-        || board.contains(robbers_cached, new Point(nextPoint.x + 1, nextPoint.y - 1))
+            && (direction == GameConstants.left_direction || direction == GameConstants.shoot_left_down_direction)
+        || board.contains(robbers_cached, new Point(nextPoint.x + 1, nextPoint.y + 1)) && direction == GameConstants.right_direction
         || board.contains(robbers_cached, new Point(nextPoint.x, nextPoint.y - 1)) && !board.isAt(nextPoint.x, nextPoint.y - 1, Element.ROBBER_PIT)
-        || board.contains(robbers_cached, new Point(nextPoint.x - 1, nextPoint.y)) && !board.isAt(nextPoint.x - 1, nextPoint.y, Element.ROBBER_PIT)
-        || board.contains(robbers_cached, new Point(nextPoint.x + 1, nextPoint.y)) && !board.isAt(nextPoint.x + 1, nextPoint.y, Element.ROBBER_PIT)
+        || board.contains(robbers_cached, new Point(nextPoint.x - 1, nextPoint.y)) 
+            && (!board.isAt(nextPoint.x - 1, nextPoint.y, Element.ROBBER_PIT) || !board.isAt(nextPoint.x - 1, nextPoint.y, Element.ROBBER_FALL))
+        || board.contains(robbers_cached, new Point(nextPoint.x + 1, nextPoint.y)) 
+            && (!board.isAt(nextPoint.x + 1, nextPoint.y, Element.ROBBER_PIT) || !board.isAt(nextPoint.x + 1, nextPoint.y, Element.ROBBER_FALL))
+        || board.contains(robbers_cached, new Point(nextPoint.x - 2, nextPoint.y)) && direction == GameConstants.shoot_left_down_direction
+        || board.contains(robbers_cached, new Point(nextPoint.x + 2, nextPoint.y)) && direction == GameConstants.shoot_right_down_direction
+        || board.contains(robbers_cached, new Point(nextPoint.x, nextPoint.y + 2)) && direction == GameConstants.up_direction
+        || board.contains(robbers_cached, new Point(nextPoint.x - 1, nextPoint.y - 1)) 
+            && !board.isGroundAtCached(nextPoint.x, nextPoint.y - 1, ground_cached)
+            && !board.isAt(nextPoint.x - 1, nextPoint.y - 1, Element.ROBBER_PIT)
+        || board.contains(robbers_cached, new Point(nextPoint.x + 1, nextPoint.y - 1)) 
+            && !board.isGroundAtCached(nextPoint.x, nextPoint.y - 1, ground_cached)
+            && !board.isAt(nextPoint.x + 1, nextPoint.y - 1, Element.ROBBER_PIT)
     ) {
         return false;
     }
@@ -249,7 +271,7 @@ const findAllPaths = (board, allPaths) => {
             continue;
         }
 
-        if(i === 1 || i === 2){
+        if(i <= 3){
             checkForSafety = true;
         }else{
             checkForSafety = false;
@@ -258,13 +280,13 @@ const findAllPaths = (board, allPaths) => {
         const theLastPoint = allPaths[i].points.slice(-1)[0];
 
         //go right if possible
-        if (isCharacterOnGround(board, allPaths[i], theLastPoint, ground_cached, pipes_cached)
+        if (isCharacterOnGroundOrPipeOrLadder(board, allPaths[i], theLastPoint, ground_cached, pipes_cached)
             && addNextPointIfPossible(board, theLastPoint, GameConstants.right_direction, allPaths, i, checkForSafety)) {
             isMatchFound = true;
         }
 
         //go left if possible
-        if (isCharacterOnGround(board, allPaths[i], theLastPoint, ground_cached, pipes_cached)
+        if (isCharacterOnGroundOrPipeOrLadder(board, allPaths[i], theLastPoint, ground_cached, pipes_cached)
             && addNextPointIfPossible(board, theLastPoint, GameConstants.left_direction, allPaths, i, checkForSafety)) {
             isMatchFound = true;
         }
@@ -276,27 +298,27 @@ const findAllPaths = (board, allPaths) => {
         }
 
         //go down if possible
-        if ((!board.isBarrierAtCached(theLastPoint.x, theLastPoint.y - 1, barriers_cached)
-            &&
-            (board.isLadderAtCached(theLastPoint.x, theLastPoint.y, ladders_cached)
+        if ((board.isLadderAtCached(theLastPoint.x, theLastPoint.y, ladders_cached)
                 || board.isLadderAtCached(theLastPoint.x, theLastPoint.y-1, ladders_cached)
-                || board.isPipeAtCached(theLastPoint.x, theLastPoint.y, pipes_cached)))
+                || board.isPipeAtCached(theLastPoint.x, theLastPoint.y, pipes_cached))
             && addNextPointIfPossible(board, theLastPoint, GameConstants.down_direction, allPaths, i, checkForSafety)) {
             isMatchFound = true;
         }
 
         //shoot left if possible
-        if (addNextPointIfPossible(board, theLastPoint, GameConstants.shoot_left_down_direction, allPaths, i, checkForSafety)) {
+        if (isCharacterOnGround(board, allPaths[i], theLastPoint, ground_cached)
+            && addNextPointIfPossible(board, theLastPoint, GameConstants.shoot_left_down_direction, allPaths, i, checkForSafety)) {
             isMatchFound = true;
         }
 
         //shoot right if possible
-        if (addNextPointIfPossible(board, theLastPoint, GameConstants.shoot_right_down_direction, allPaths, i, checkForSafety)) {
+        if (isCharacterOnGround(board, allPaths[i], theLastPoint, ground_cached)
+            && addNextPointIfPossible(board, theLastPoint, GameConstants.shoot_right_down_direction, allPaths, i, checkForSafety)) {
             isMatchFound = true;
         }
 
         //fall down if possible
-        if (!isCharacterOnGround(board, allPaths[i], theLastPoint, ground_cached, pipes_cached)
+        if (!isCharacterOnGroundOrPipeOrLadder(board, allPaths[i], theLastPoint, ground_cached, pipes_cached)
             && addNextPointIfPossible(board, theLastPoint, GameConstants.falling_down_direction, allPaths, i, checkForSafety)) {
             isMatchFound = true;
         }
@@ -313,4 +335,15 @@ const findAllPaths = (board, allPaths) => {
     return findAllPaths(board, allPaths);
 }
 
-module.exports = { getTreasuresOnBoard, findPathsFromPoint, getTheBestPath };
+const getRandomMovement = (board, myPosition) => {
+    if(isCharacterOnGroundOrPipeOrLadder(board, new CliffordPath([], []), myPosition, ground_cached, pipes_cached))
+    {
+        if(isTheNextPointSafe(board, new Point(myPosition.x + 1, myPosition.y), Direction.RIGHT)){
+            return GameConstants.right_direction;
+        } else if(isTheNextPointSafe(board, new Point(myPosition.x - 1, myPosition.y), Direction.LEFT)){
+            return GameConstants.left_direction;
+        }
+    }
+}
+
+module.exports = { getTreasuresOnBoard, findPathsFromPoint, getTheBestPath, getRandomMovement };
