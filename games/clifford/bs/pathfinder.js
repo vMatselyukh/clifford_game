@@ -346,12 +346,25 @@ const getRandomMovement = (board, myPosition) => {
             return GameConstants.right_direction;
         } else if(isTheNextPointSafe(board, new Point(myPosition.x - 1, myPosition.y), Direction.LEFT)){
             return GameConstants.left_direction;
-        } else if(isTheNextPointSafe(board, new Point(myPosition.x, myPosition.y + 1), Direction.UP)){
+        } else if(isTheNextPointSafe(board, new Point(myPosition.x, myPosition.y + 1), Direction.UP)
+            && board.isAt(myPosition.x, myPosition.y + 1, Element.LADDER)){
             return GameConstants.up_direction;
-        }  else if(isTheNextPointSafe(board, new Point(myPosition.x, myPosition.y - 1), Direction.DOWN)){
+        }  else if(isTheNextPointSafe(board, new Point(myPosition.x, myPosition.y - 1), Direction.DOWN)
+            && !board.isGroundAtCached(myPosition.x, myPosition.y - 1, ground_cached)){
             return GameConstants.down_direction;
         }
     }
+
+    if(!board.isGroundAtCached(myPosition.x + 1, myPosition.y, ground_cached))
+    {
+        return GameConstants.right_direction;
+    }
+    else if(!board.isGroundAtCached(myPosition.x - 1, myPosition.y, ground_cached))
+    {
+        return GameConstants.left_direction;
+    }
+
+    return GameConstants.right_direction;
 }
 
 // const hideFromBullet = (board, myPosition, bulletDirection) => {
