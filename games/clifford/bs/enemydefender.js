@@ -237,11 +237,11 @@ const digHoleIfNeeded = (board, myPosition, robbers_cached) => {
 }
 
 const detectBullet = (board, myPosition, horizontalBullets, verticalBullets) => {
-    let bulletDirection = none;
+    let bulletDirection = null;
 
     for(let i = 0; i < 29; i ++)
     {
-        if(board.isAt(i, myPosition.y, Element.BULLET) && horizontalBullets.all(bullet => bullet.coordinate !== i)){
+        if(board.isAt(i, myPosition.y, Element.BULLET) && !horizontalBullets.some(bullet => bullet.coordinate == myPosition.y && bullet.counter != 0)){
             if(i<myPosition.x){
                 bulletDirection = GameConstants.left_direction;
             }
@@ -253,7 +253,7 @@ const detectBullet = (board, myPosition, horizontalBullets, verticalBullets) => 
 
     for(let i = 0; i < 29; i ++)
     {
-        if(board.isAt(myPosition.y, i, Element.BULLET) && verticalBullets.all(bullet => bullet.coordinate !== i)){
+        if(board.isAt(myPosition.y, i, Element.BULLET) && !verticalBullets.some(bullet => bullet.coordinate == myPosition.x && bullet.counter != 0)){
             if(i<myPosition.y){
                 bulletDirection = GameConstants.down_direction;
             }

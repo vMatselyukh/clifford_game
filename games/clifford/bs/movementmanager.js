@@ -2,7 +2,7 @@ const Games = require('./../../../engine/games.js');
 const Point = require('./../../../engine/point.js');
 const Direction = Games.require('./../direction.js');
 const Element = Games.require('./../elements.js');
-const { getTheBestPath, getRandomMovement } = require("./pathfinder");
+const { getTheBestPath, getRandomMovement, findPathsFromPoint, initArrays } = require("./pathfinder");
 const { getEnemyLeftShot, getEnemyRightShot, getEnemyUpShot, getEnemyDownShot, getFallingDownEnemyShot,
     decreaseBulletCounter, setBulletCounter, detectBullet,
     digHoleIfNeeded } = require("./enemydefender");
@@ -92,6 +92,13 @@ class MovementManager {
 
         let myPosition = this.board.getHero();
 
+        let hideFromBulletPath = this.hideFromBullet();
+        if(hideFromBulletPath)
+        {
+            let stringDirection = hideFromBulletPath.directions[1];
+            return this.convertCustomToGameDirection(stringDirection);
+        }
+
         let shootEnemyDirection = this.shoot_enemy(myPosition);
         if (shootEnemyDirection !== null) {
             return shootEnemyDirection;
@@ -119,15 +126,109 @@ class MovementManager {
         return this.convertCustomToGameDirection(stringDirection);
     }
 
-    // hideFromBullet = () => {
-    //     let myPosition = this.board.getHero();
-    //     const bulletDetectedDirection = detectBullet(this.board, myPosition, hotizontal_bullets_array, vertical_bullets_array);
+    hideFromBullet = () => {
+        let myPosition = this.board.getHero();
+        const bulletDetectedDirection = detectBullet(this.board, myPosition, hotizontal_bullets_array, vertical_bullets_array);
 
-    //     switch(bulletDetectedDirection){
-    //         case GameConstants.left_direction:
+        if(!bulletDetectedDirection)
+        {
+            return null;
+        }
 
-    //     }
-    // }
+        initArrays();
+        let allPaths = findPathsFromPoint(this.board, myPosition);
+
+        switch(bulletDetectedDirection){
+            case GameConstants.left_direction:
+                return this.findTheShortestPathAwayFromBulletRight(allPaths, myPosition);
+            case GameConstants.right_direction:
+                return this.findTheShortestPathAwayFromBulletLeft(allPaths, myPosition);
+            case GameConstants.up_direction:
+                return this.findTheShortestPathAwayFromBulletDown(allPaths, myPosition);
+            case GameConstants.doown_direction:
+                return this.findTheShortestPathAwayFromBulletUp(allPaths, myPosition);
+        }
+    }
+
+    findTheShortestPathAwayFromBulletUp = (paths, myPosition) => {
+        let shortestPath = null;
+        let shortestLength = 100;
+        for(let i = 0; i < paths.length; i++)
+        {
+            for(let j = 0; j< paths[i].points.length; j++)
+            {
+                if(paths[i].points[j].y > myPosition.y 
+                    && (paths[i].points[j].x > myPosition.x + 2 || paths[i].points[j].x < myPosition.x - 2)
+                    && paths[i].directionsLength < shortestLength)
+                    {
+                        shortestPath = paths[i];
+                        shortestLength = paths[i].directionsLength;
+                    }
+            }
+        }
+
+        return shortestPath;
+    }
+
+    findTheShortestPathAwayFromBulletDown = (paths, myPosition) => {
+        let shortestPath = null;
+        let shortestLength = 100;
+        for(let i = 0; i < paths.length; i++)
+        {
+            for(let j = 0; j< paths[i].points.length; j++)
+            {
+                if(paths[i].points[j].y < myPosition.y 
+                    && (paths[i].points[j].x > myPosition.x + 2 || paths[i].points[j].x < myPosition.x - 2)
+                    && paths[i].directionsLength < shortestLength)
+                    {
+                        shortestPath = paths[i];
+                        shortestLength = paths[i].directionsLength;
+                    }
+            }
+        }
+
+        return shortestPath;
+    }
+
+    findTheShortestPathAwayFromBulletRight = (paths, myPosition) => {
+        let shortestPath = null;
+        let shortestLength = 100;
+        for(let i = 0; i < paths.length; i++)
+        {
+            for(let j = 0; j< paths[i].points.length; j++)
+            {
+                if(paths[i].points[j].x > myPosition.x 
+                    && (paths[i].points[j].y > myPosition.y + 2 || paths[i].points[j].y < myPosition.y - 2)
+                    && paths[i].directionsLength < shortestLength)
+                    {
+                        shortestPath = paths[i];
+                        shortestLength = paths[i].directionsLength;
+                    }
+            }
+        }
+
+        return shortestPath;
+    }
+
+    findTheShortestPathAwayFromBulletLeft = (paths, myPosition) => {
+        let shortestPath = null;
+        let shortestLength = 100;
+        for(let i = 0; i < paths.length; i++)
+        {
+            for(let j = 0; j< paths[i].points.length; j++)
+            {
+                if(paths[i].points[j].x < myPosition.x 
+                    && (paths[i].points[j].y > myPosition.y + 2 || paths[i].points[j].y < myPosition.y - 2)
+                    && paths[i].directionsLength < shortestLength)
+                    {
+                        shortestPath = paths[i];
+                        shortestLength = paths[i].directionsLength;
+                    }
+            }
+        }
+
+        return shortestPath;
+    }
 
     shoot_enemy = (myPosition) => {
         let myHorizontalBullet = hotizontal_bullets_array.find(bullet => bullet.coordinate == myPosition.y);
@@ -149,14 +250,15 @@ class MovementManager {
             setBulletCounter(hotizontal_bullets_array, myPosition.y, enemyRightShot, shot_number);
             return Direction.SHOOT_RIGHT;
         }
-        else if (enemyUpShot && (myVerticalBullet === undefined || myVerticalBullet.counter == 0 && myVerticalBullet.shotsTotalCount != myVerticalBullet.shotsCount)) {
-            setBulletCounter(vertical_bullets_array, myPosition.x, enemyUpShot, shot_number);
-            return Direction.SHOOT_UP;
-        }
-        else if (enemyDownShot && (myVerticalBullet === undefined || myVerticalBullet.counter == 0 && myVerticalBullet.shotsTotalCount != myVerticalBullet.shotsCount)) {
-            setBulletCounter(vertical_bullets_array, myPosition.x, enemyDownShot, shot_number);
-            return Direction.SHOOT_DOWN;
-        } else if (fallingDownEnemyShot && (myHorizontalBullet === undefined || myHorizontalBullet.counter == 0 && myHorizontalBullet.shotsTotalCount != myHorizontalBullet.shotsCount)) {
+        // else if (enemyUpShot && (myVerticalBullet === undefined || myVerticalBullet.counter == 0 && myVerticalBullet.shotsTotalCount != myVerticalBullet.shotsCount)) {
+        //     setBulletCounter(vertical_bullets_array, myPosition.x, enemyUpShot, shot_number);
+        //     return Direction.SHOOT_UP;
+        // }
+        // else if (enemyDownShot && (myVerticalBullet === undefined || myVerticalBullet.counter == 0 && myVerticalBullet.shotsTotalCount != myVerticalBullet.shotsCount)) {
+        //     setBulletCounter(vertical_bullets_array, myPosition.x, enemyDownShot, shot_number);
+        //     return Direction.SHOOT_DOWN;
+        //} 
+        else if (fallingDownEnemyShot && (myHorizontalBullet === undefined || myHorizontalBullet.counter == 0 && myHorizontalBullet.shotsTotalCount != myHorizontalBullet.shotsCount)) {
             setBulletCounter(hotizontal_bullets_array, myPosition.y, fallingDownEnemyShot.shot, shot_number);
             return this.convertCustomToGameDirection(fallingDownEnemyShot.shootDirection);
         }
@@ -226,6 +328,11 @@ const clearBulletsArray = () => {
     vertical_bullets_array = [];
 }
 
+const setBulletsArray = (horizontal_array, vertical_array) => {
+    hotizontal_bullets_array = horizontal_array;
+    vertical_bullets_array = vertical_array;
+}
 
-module.exports = { MovementManager, clearBulletsArray };
+
+module.exports = { MovementManager, clearBulletsArray, setBulletsArray };
 

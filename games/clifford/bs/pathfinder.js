@@ -103,6 +103,13 @@ const isCharacterOnGroundOrPipeOrLadder = (board, path, myPosition, ground_cache
         || board.isLadderAtCached(myPosition.x, myPosition.y, ladders_cached);
 }
 
+const isCharacterOnGroundOrPipeOrLadderWithoutPath = (board, myPosition, ground_cached_local, pipes_cached_local) => {
+    return (board.isGroundAtCached(myPosition.x, myPosition.y - 1, ground_cached_local)
+        || board.isPipeAtCached(myPosition.x, myPosition.y, pipes_cached_local)
+        || board.isAt(myPosition.x, myPosition.y, Element.HERO_LADDER))
+        || board.isLadderAtCached(myPosition.x, myPosition.y, ladders_cached);
+}
+
 const isCharacterOnGround = (board, path, myPosition, ground_cached_local) => {
     return (board.isGroundAtCached(myPosition.x, myPosition.y - 1, ground_cached_local)
         && !board.contains(path.removedBarriers, new Point(myPosition.x, myPosition.y - 1)));
@@ -183,7 +190,7 @@ const getTreasureIfFound = (board, point) => {
         } else if (board.contains(mortal_enemies_cached, new Point(point.x, point.y))) {
             treasurePrice = 1;
         }
-    }
+    } 
 
     if (treasurePrice > 0) {
         return new Treasure(treasurePrice, treasureElement, point);
@@ -384,4 +391,4 @@ const getRandomMovement = (board, myPosition) => {
 //     }
 // }
 
-module.exports = { getTreasuresOnBoard, findPathsFromPoint, getTheBestPath, getRandomMovement };
+module.exports = { getTreasuresOnBoard, findPathsFromPoint, getTheBestPath, getRandomMovement, initArrays };
