@@ -32,7 +32,7 @@ const PathTests = require("./tests/pathtests");
 
 var CliffordTest = module.exports = function(){
     baseTests();
-    //PathFinderTests();
+    PathFinderTests();
     MovemeneManagerTests();
-    //PathTests();
+    PathTests();
 }

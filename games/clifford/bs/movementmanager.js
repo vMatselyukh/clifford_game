@@ -3,8 +3,8 @@ const Point = require('./../../../engine/point.js');
 const Direction = Games.require('./../direction.js');
 const Element = Games.require('./../elements.js');
 const { getTheBestPath, getRandomMovement } = require("./pathfinder");
-const { getEnemyLeftShot, getEnemyRightShot, getEnemyUpShot, getEnemyDownShot,
-    decreaseBulletCounter, setBulletCounter,
+const { getEnemyLeftShot, getEnemyRightShot, getEnemyUpShot, getEnemyDownShot, getFallingDownEnemyShot,
+    decreaseBulletCounter, setBulletCounter, detectBullet,
     digHoleIfNeeded } = require("./enemydefender");
 const { GameConstants } = require("./gameconstants");
 
@@ -21,6 +21,7 @@ let shot_number = 0;
 let walls = [];
 let bricks = [];
 let enemies = [];
+let fallingEnemies = [];
 
 class MovementManager {
     //board
@@ -29,8 +30,7 @@ class MovementManager {
     constructor(_board) {
         this.board = _board;
 
-        if(this.board.hasHeroDied())
-        {
+        if (this.board.hasHeroDied()) {
             console.log("Hero died");
             this.resetValues();
         }
@@ -38,6 +38,7 @@ class MovementManager {
         walls = this.board.getNonRuinableWalls();
         bricks = this.board.getRuinableWalls();
         enemies = this.board.getEnemies();
+        fallingEnemies = this.board.getFallingEnemies();
 
         GameConstants.increment_for_glow_clue_price = glow_increment;
         GameConstants.increment_for_knife_clue_price = knife_increment;
@@ -71,6 +72,10 @@ class MovementManager {
                 return Direction.CRACK_LEFT;
             case GameConstants.shoot_right_down_direction:
                 return Direction.CRACK_RIGHT;
+            case GameConstants.shoot_left_direction:
+                return Direction.SHOOT_LEFT;
+            case GameConstants.shoot_right_direction:
+                return Direction.SHOOT_RIGHT;
             default:
                 return Direction.STOP;
         }
@@ -88,11 +93,10 @@ class MovementManager {
         let myPosition = this.board.getHero();
 
         let shootEnemyDirection = this.shoot_enemy(myPosition);
-        if(shootEnemyDirection !== null){
+        if (shootEnemyDirection !== null) {
             return shootEnemyDirection;
         }
-        else
-        {
+        else {
             shot_number = 0;
         }
 
@@ -115,6 +119,16 @@ class MovementManager {
         return this.convertCustomToGameDirection(stringDirection);
     }
 
+    // hideFromBullet = () => {
+    //     let myPosition = this.board.getHero();
+    //     const bulletDetectedDirection = detectBullet(this.board, myPosition, hotizontal_bullets_array, vertical_bullets_array);
+
+    //     switch(bulletDetectedDirection){
+    //         case GameConstants.left_direction:
+
+    //     }
+    // }
+
     shoot_enemy = (myPosition) => {
         let myHorizontalBullet = hotizontal_bullets_array.find(bullet => bullet.coordinate == myPosition.y);
         let myVerticalBullet = vertical_bullets_array.find(bullet => bullet.coordinate == myPosition.x);
@@ -123,6 +137,7 @@ class MovementManager {
         const enemyRightShot = getEnemyRightShot(this.board, myPosition, walls, bricks, enemies);
         const enemyUpShot = getEnemyUpShot(this.board, myPosition, walls, bricks, enemies);
         const enemyDownShot = getEnemyDownShot(this.board, myPosition, walls, bricks, enemies);
+        const fallingDownEnemyShot = getFallingDownEnemyShot(this.board, myPosition, fallingEnemies);
 
         shot_number++;
 
@@ -141,6 +156,9 @@ class MovementManager {
         else if (enemyDownShot && (myVerticalBullet === undefined || myVerticalBullet.counter == 0 && myVerticalBullet.shotsTotalCount != myVerticalBullet.shotsCount)) {
             setBulletCounter(vertical_bullets_array, myPosition.x, enemyDownShot, shot_number);
             return Direction.SHOOT_DOWN;
+        } else if (fallingDownEnemyShot && (myHorizontalBullet === undefined || myHorizontalBullet.counter == 0 && myHorizontalBullet.shotsTotalCount != myHorizontalBullet.shotsCount)) {
+            setBulletCounter(hotizontal_bullets_array, myPosition.y, fallingDownEnemyShot.shot, shot_number);
+            return this.convertCustomToGameDirection(fallingDownEnemyShot.shootDirection);
         }
 
         return null;
@@ -177,15 +195,15 @@ class MovementManager {
                 break;
 
             case Element.CLUE_GLOVE:
-                console.log("glow taken");
+                //console.log("glow taken");
                 glow_increment++;
                 break;
             case Element.CLUE_KNIFE:
-                console.log("knife taken");
+                //console.log("knife taken");
                 knife_increment++;
                 break;
             case Element.CLUE_RING:
-                console.log("ring taken");
+                //console.log("ring taken");
                 ring_increment++;
                 break;
         }
@@ -209,5 +227,5 @@ const clearBulletsArray = () => {
 }
 
 
-module.exports = { MovementManager, clearBulletsArray};
+module.exports = { MovementManager, clearBulletsArray };
 

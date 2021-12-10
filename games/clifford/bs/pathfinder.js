@@ -78,7 +78,8 @@ const findTheBestPathToTreasures = (board, myPosition) => {
     let maxWeight = 0;
     let neededPath = null;
     for(let i = 0; i < allPaths.length; i++){
-        if(allPaths[i].pathWeight > maxWeight){
+        if(allPaths[i].pathWeight > maxWeight
+            && allPaths[i].notFalling){
             neededPath = allPaths[i];
             maxWeight = allPaths[i].pathWeight;
         }
@@ -98,7 +99,8 @@ const isCharacterOnGroundOrPipeOrLadder = (board, path, myPosition, ground_cache
     return (board.isGroundAtCached(myPosition.x, myPosition.y - 1, ground_cached_local)
         && !board.contains(path.removedBarriers, new Point(myPosition.x, myPosition.y - 1))
         || board.isPipeAtCached(myPosition.x, myPosition.y, pipes_cached_local)
-        || board.isAt(myPosition.x, myPosition.y, Element.HERO_LADDER));
+        || board.isAt(myPosition.x, myPosition.y, Element.HERO_LADDER))
+        || board.isLadderAtCached(myPosition.x, myPosition.y, ladders_cached);
 }
 
 const isCharacterOnGround = (board, path, myPosition, ground_cached_local) => {
@@ -134,12 +136,14 @@ const addNextPointIfPossible = (board, position, direction, allPaths, index, che
             if (!board.isBarrierAtCached(position.x + shootDownX, position.y, barriers_cached)) {
                 processShootingInTheFloor(board, nextPoint, allPaths, index, direction);// === match_found_key
             }
-        } else if (!board.contains(visited_points, nextPoint)) {
+        } else if (!board.contains(visited_points, nextPoint) || direction == GameConstants.falling_down_direction) {
             const treasure = getTreasureIfFound(board, nextPoint);
             const treasures = treasure != null ? [...allPaths[index].treasures, treasure] : allPaths[index].treasures;
+            const isNextPointOnGround = isCharacterOnGroundOrPipeOrLadder(board, allPaths[index], new Point(nextPoint.x, nextPoint.y), ground_cached,
+                pipes_cached);
 
             allPaths.push(new CliffordPath([...allPaths[index].points, nextPoint], [...allPaths[index].directions, direction],
-                false, allPaths[index].removeBarriers, treasures));
+                false, allPaths[index].removeBarriers, treasures, isNextPointOnGround));
 
             addNodeToVisited(board, nextPoint);
         }
@@ -342,8 +346,29 @@ const getRandomMovement = (board, myPosition) => {
             return GameConstants.right_direction;
         } else if(isTheNextPointSafe(board, new Point(myPosition.x - 1, myPosition.y), Direction.LEFT)){
             return GameConstants.left_direction;
+        } else if(isTheNextPointSafe(board, new Point(myPosition.x, myPosition.y + 1), Direction.UP)){
+            return GameConstants.up_direction;
+        }  else if(isTheNextPointSafe(board, new Point(myPosition.x, myPosition.y - 1), Direction.DOWN)){
+            return GameConstants.down_direction;
         }
     }
 }
+
+// const hideFromBullet = (board, myPosition, bulletDirection) => {
+//     switch(bulletDirection){
+//         case GameConstants.left_direction:
+//             if(board.isLadderAtCached(myPosition.x, myPosition.y + 1, ladders_cached))
+//             {
+//                 return GameConstants.up_direction;
+//             }
+//             if(board.isLadderAtCached(myPosition.x, myPosition.y-1, ladders_cached)
+//                 || board.isPipeAtCached(myPosition.x, myPosition.y, pipes_cached))
+//             {
+//                 return GameConstants.down_direction;   
+//             }
+//             if(!board.contains(walls, myPosition.y, Element))
+            
+//     }
+// }
 
 module.exports = { getTreasuresOnBoard, findPathsFromPoint, getTheBestPath, getRandomMovement };

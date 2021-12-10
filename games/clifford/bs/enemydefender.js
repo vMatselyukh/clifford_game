@@ -2,9 +2,62 @@ const Element = require("../elements.js");
 const Direction = require("../direction.js");
 const { Shot } = require("./shot"); 
 const Point = require("./../../../engine/point.js");
+const { GameConstants } = require("./gameconstants.js");
 
 const crack_left = "sleftdown";
 const crack_right = "srightdown";
+
+const getFallingDownEnemyShot = (board, myPosition, fallingEnemies) => {
+    
+    let isEnemyFallingToTheLine = true;
+    let shootDirection = null;
+
+    for(let i = 0; i < fallingEnemies.length; i++){
+        isEnemyFallingToTheLine = true;
+        if(fallingEnemies[i].y > myPosition.y){
+            for(let j = fallingEnemies[i].y - 1; j > myPosition.y; j--)
+            {
+                if(!(board.isAt(fallingEnemies[i].x, j, Element.NONE)
+                    || board.isAt(fallingEnemies[i].x, j, Element.PIPE)
+                ))
+                {
+                    isEnemyFallingToTheLine = false;
+                    break;
+                }
+            }
+
+            if(fallingEnemies[i].x > myPosition.x){
+                shootDirection = GameConstants.shoot_right_direction;
+                for(let k = fallingEnemies[i].x; k > myPosition.x; k--){
+                    if(board.isAt(k, myPosition.y, Element.BRICK)
+                        || board.isAt(k, myPosition.y, Element.STONE))
+                    {
+                        isEnemyFallingToTheLine = false;
+                    }
+                }
+            } else {
+                shootDirection = GameConstants.shoot_right_direction;
+                for(let k = fallingEnemies[i].x; k < myPosition.x; k++){
+                    if(board.isAt(k, myPosition.y, Element.BRICK)
+                        || board.isAt(k, myPosition.y, Element.STONE))
+                    {
+                        isEnemyFallingToTheLine = false;
+                    }
+                }
+            }
+
+            
+            const distance = Math.abs(fallingEnemies[i].x - myPosition.x);
+            const height = fallingEnemies[i].y - myPosition.y;
+
+            if(height * 2 > distance){
+                return;
+            }
+
+            return {shootDirection: shootDirection, shot: new Shot(distance, 1)};
+        }
+    }
+}
 
 const getEnemyLeftShot = (board, myPosition, walls, bricks, enemies) => {
     let x = myPosition.x;
@@ -93,11 +146,15 @@ const decreaseBulletCounter = (bullet_array) => {
         if (bullet_array[i].counter > 0) {
             bullet_array[i].counter--;
         }
+        else if(bullet_array[i] != 0)
+        {
+            bullet_array[i] = 0;
+        }
     }
 }
 
 const setBulletCounter = (bullet_array, coordinate, shot, shotIndex) => {
-    const counter = shot.distance + shot.bulletsNumber;
+    const counter = shot.distance / 1.8 + shot.bulletsNumber;
     let counterToSet = 0;
     if(shot.bulletsNumber == shotIndex)
     {
@@ -179,4 +236,34 @@ const digHoleIfNeeded = (board, myPosition, robbers_cached) => {
     return null;
 }
 
-module.exports = { getEnemyLeftShot, getEnemyRightShot, getEnemyUpShot, getEnemyDownShot, decreaseBulletCounter, setBulletCounter, digHoleIfNeeded };
+const detectBullet = (board, myPosition, horizontalBullets, verticalBullets) => {
+    let bulletDirection = none;
+
+    for(let i = 0; i < 29; i ++)
+    {
+        if(board.isAt(i, myPosition.y, Element.BULLET) && horizontalBullets.all(bullet => bullet.coordinate !== i)){
+            if(i<myPosition.x){
+                bulletDirection = GameConstants.left_direction;
+            }
+            else{
+                bulletDirection = GameConstants.right_direction;
+            }
+        }
+    }
+
+    for(let i = 0; i < 29; i ++)
+    {
+        if(board.isAt(myPosition.y, i, Element.BULLET) && verticalBullets.all(bullet => bullet.coordinate !== i)){
+            if(i<myPosition.y){
+                bulletDirection = GameConstants.down_direction;
+            }
+            else{
+                bulletDirection = GameConstants.up_direction;
+            }
+        }
+    }
+
+    return bulletDirection;
+}
+
+module.exports = { getEnemyLeftShot, getEnemyRightShot, getEnemyUpShot, getEnemyDownShot, decreaseBulletCounter, setBulletCounter, digHoleIfNeeded, getFallingDownEnemyShot, detectBullet };

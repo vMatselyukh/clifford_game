@@ -126,6 +126,19 @@ var CliffordBoard = module.exports = function(board){
         return result;
     }
 
+    board.getFallingEnemies = () => {
+        let result = [];
+        result = result.concat(board.findAll(Element.ENEMY_HERO_FALL));
+        result = result.concat(board.findAll(Element.OTHER_HERO_FALL));
+        return result;
+    }
+
+    board.getBullets = () => {
+        let result = [];
+        result = result.concat(board.findAll(Element.BULLET));
+        return result;
+    }
+
     board.getMortalEnemies = () => {
         let result = [];
         result = result.concat(board.findAll(Element.ENEMY_HERO_LADDER));
