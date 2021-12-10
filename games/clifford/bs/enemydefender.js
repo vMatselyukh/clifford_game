@@ -36,7 +36,7 @@ const getFallingDownEnemyShot = (board, myPosition, fallingEnemies) => {
                     }
                 }
             } else {
-                shootDirection = GameConstants.shoot_right_direction;
+                shootDirection = GameConstants.shoot_left_direction;
                 for(let k = fallingEnemies[i].x; k < myPosition.x; k++){
                     if(board.isAt(k, myPosition.y, Element.BRICK)
                         || board.isAt(k, myPosition.y, Element.STONE))
@@ -50,11 +50,11 @@ const getFallingDownEnemyShot = (board, myPosition, fallingEnemies) => {
             const distance = Math.abs(fallingEnemies[i].x - myPosition.x);
             const height = fallingEnemies[i].y - myPosition.y;
 
-            if(height * 2 > distance){
-                return;
+            if(height * 2 <= distance && isEnemyFallingToTheLine){
+                return {shootDirection: shootDirection, shot: new Shot(distance, 1)};
             }
 
-            return {shootDirection: shootDirection, shot: new Shot(distance, 1)};
+            return;
         }
     }
 }
@@ -146,9 +146,14 @@ const decreaseBulletCounter = (bullet_array) => {
         if (bullet_array[i].counter > 0) {
             bullet_array[i].counter--;
         }
-        else if(bullet_array[i] != 0)
+        else if(bullet_array[i].counter != 0)
         {
-            bullet_array[i] = 0;
+            bullet_array[i].counter = 0;
+        }
+
+        if(bullet_array[i].counter == 0)
+        {
+            bullet_array[i].shotsCount = 0;
         }
     }
 }

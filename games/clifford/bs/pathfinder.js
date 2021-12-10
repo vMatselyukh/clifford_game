@@ -203,10 +203,10 @@ const isTheNextPointSafe = (board, nextPoint, direction) => {
     if (
         board.isAt(nextPoint.x, nextPoint.y, Element.ROBBER_PIT)
         || board.contains(robbers_cached, new Point(nextPoint.x + 1, nextPoint.y + 1)) 
-            && (direction == GameConstants.right_direction || direction == GameConstants.shoot_right_down_direction)  //up right
+            && (direction == GameConstants.left_direction || direction == GameConstants.shoot_left_down_direction)  //up right
         || board.contains(robbers_cached, new Point(nextPoint.x, nextPoint.y + 1)) && direction != GameConstants.down_direction //up
         || board.contains(robbers_cached, new Point(nextPoint.x - 1, nextPoint.y + 1)) 
-            && (direction == GameConstants.left_direction || direction == GameConstants.shoot_left_down_direction)
+            && (direction == GameConstants.right_direction || direction == GameConstants.shoot_right_down_direction)
         || board.contains(robbers_cached, new Point(nextPoint.x + 1, nextPoint.y + 1)) && direction == GameConstants.right_direction
         || board.contains(robbers_cached, new Point(nextPoint.x, nextPoint.y - 1)) && !board.isAt(nextPoint.x, nextPoint.y - 1, Element.ROBBER_PIT)
         || board.contains(robbers_cached, new Point(nextPoint.x - 1, nextPoint.y)) 

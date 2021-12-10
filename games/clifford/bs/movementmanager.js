@@ -95,8 +95,7 @@ class MovementManager {
         let hideFromBulletPath = this.hideFromBullet();
         if(hideFromBulletPath)
         {
-            let stringDirection = hideFromBulletPath.directions[1];
-            return this.convertCustomToGameDirection(stringDirection);
+            return this.convertCustomToGameDirection(hideFromBulletPath);
         }
 
         let shootEnemyDirection = this.shoot_enemy(myPosition);
@@ -138,11 +137,25 @@ class MovementManager {
         initArrays();
         let allPaths = findPathsFromPoint(this.board, myPosition);
 
+        let path = null;
+
         switch(bulletDetectedDirection){
             case GameConstants.left_direction:
-                return this.findTheShortestPathAwayFromBulletRight(allPaths, myPosition);
+                path = this.findTheShortestPathAwayFromBulletRight(allPaths, myPosition);
+                if(path)
+                {
+                    return path.directions[1];
+                }
+
+                return GameConstants.right_direction;
             case GameConstants.right_direction:
-                return this.findTheShortestPathAwayFromBulletLeft(allPaths, myPosition);
+                path = this.findTheShortestPathAwayFromBulletLeft(allPaths, myPosition);
+                if(path)
+                {
+                    return path.directions[1];
+                }
+
+                return GameConstants.left_direction;
             case GameConstants.up_direction:
                 return this.findTheShortestPathAwayFromBulletDown(allPaths, myPosition);
             case GameConstants.doown_direction:
@@ -250,14 +263,14 @@ class MovementManager {
             setBulletCounter(hotizontal_bullets_array, myPosition.y, enemyRightShot, shot_number);
             return Direction.SHOOT_RIGHT;
         }
-        // else if (enemyUpShot && (myVerticalBullet === undefined || myVerticalBullet.counter == 0 && myVerticalBullet.shotsTotalCount != myVerticalBullet.shotsCount)) {
-        //     setBulletCounter(vertical_bullets_array, myPosition.x, enemyUpShot, shot_number);
-        //     return Direction.SHOOT_UP;
-        // }
-        // else if (enemyDownShot && (myVerticalBullet === undefined || myVerticalBullet.counter == 0 && myVerticalBullet.shotsTotalCount != myVerticalBullet.shotsCount)) {
-        //     setBulletCounter(vertical_bullets_array, myPosition.x, enemyDownShot, shot_number);
-        //     return Direction.SHOOT_DOWN;
-        //} 
+        else if (enemyUpShot && (myVerticalBullet === undefined || myVerticalBullet.counter == 0 && myVerticalBullet.shotsTotalCount != myVerticalBullet.shotsCount)) {
+            setBulletCounter(vertical_bullets_array, myPosition.x, enemyUpShot, shot_number);
+            return Direction.SHOOT_UP;
+        }
+        else if (enemyDownShot && (myVerticalBullet === undefined || myVerticalBullet.counter == 0 && myVerticalBullet.shotsTotalCount != myVerticalBullet.shotsCount)) {
+            setBulletCounter(vertical_bullets_array, myPosition.x, enemyDownShot, shot_number);
+            return Direction.SHOOT_DOWN;
+        } 
         else if (fallingDownEnemyShot && (myHorizontalBullet === undefined || myHorizontalBullet.counter == 0 && myHorizontalBullet.shotsTotalCount != myHorizontalBullet.shotsCount)) {
             setBulletCounter(hotizontal_bullets_array, myPosition.y, fallingDownEnemyShot.shot, shot_number);
             return this.convertCustomToGameDirection(fallingDownEnemyShot.shootDirection);

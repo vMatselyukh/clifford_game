@@ -22,8 +22,9 @@ module.exports = () => {
     // testMovementManagerWorks14();
     // testMovementManagerWorks15();
     // testMovementManagerWorks16();
-    testMovementManagerWorks17();
-    //testMovementManagerWorks18();
+    //testMovementManagerWorks17();
+    // testMovementManagerWorks18();
+    testMovementManagerWorks19();
 }
 
 const testMovementManagerWorks = () => {
@@ -228,7 +229,7 @@ const testMovementManagerWorks4 = () => {
 
     const nextDirection = movementManager.getTheNextMove();
 
-    assertEquals(Direction.CRACK_LEFT, nextDirection);
+    assertEquals(Direction.CRACK_RIGHT, nextDirection);
 }
 
 const testMovementManagerWorks5 = () => {
@@ -831,6 +832,48 @@ const testMovementManagerWorks18 = () => {
 
     let nextDirection = movementManager.getTheNextMove();
     assertEquals(Direction.LEFT, nextDirection);
+}
+
+const testMovementManagerWorks19 = () => {
+    let board = new Board(
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
+        "☼H        &   ~~H~~~~☼☼☼☼☼☼☼H☼" +
+        "☼H~~~~  ######  H $       H☼H☼" +
+        "☼H&   & $      $##H#######H☼H☼" +
+        "☼H#########       H  &$~~~H☼H☼" +
+        "☼H &      ###X####H##Hm    ☼H☼" +
+        "☼H           H      #######☼H☼" +
+        "☼~~~~~~~~~~~~H       H~~~~~☼H☼" +
+        "☼  &  H    »    ►    H W   ☼H☼" +
+        "☼ ### #############H H#####☼H☼" +
+        "☼H                 H    &  ☼H☼" +
+        "☼H#####         H##H####    H☼" +
+        "☼H  $   H######### H   ######☼" +
+        "☼H##  & H          H~~~~~~   ☼" +
+        "☼~~~~#####H#  $~~~~H  $&     ☼" +
+        "☼W @      H      &@# &   )~~~☼" +
+        "☼   ########H    ##N###H##   ☼" +
+        "☼           H          H     ☼" +
+        "☼H    ###########H   m H#####☼" +
+        "☼H###      @  »  H$&   H&    ☼" +
+        "☼H &######  ##H###### &H     ☼" +
+        "☼H     & m    H ~~~~~##H###H ☼" +
+        "☼   »H########H# $     H   ##☼" +
+        "☼@###H        H   &    &~~~~~☼" +
+        "☼    H########H#########     ☼" +
+        "☼H   H   W    &        W     ☼" +
+        "☼H$ ####H######       W #####☼" +
+        "☼H&     H @    H#######H     ☼" +
+        "☼##############H«  )   H#####☼" +
+        "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"
+    );
+
+    clearBulletsArray();
+    setBulletsArray([{ coordinate: 21, counter: 0, shotsTotalCount: 1, shotsCount: 1 }], []);
+    const movementManager = new MovementManager(board);
+
+    let nextDirection = movementManager.getTheNextMove();
+    assertEquals(Direction.SHOOT_LEFT, nextDirection);
 }
 
 
